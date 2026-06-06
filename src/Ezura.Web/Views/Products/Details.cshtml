@@ -1,0 +1,263 @@
+@model ProductDto
+@{
+    ViewData["Title"] = Model.Name;
+    var related = ViewBag.RelatedProducts as IEnumerable<ProductDto> ?? Enumerable.Empty<ProductDto>();
+    var primaryImage = Model.Images?.FirstOrDefault(i => i.IsPrimary)?.ImageUrl ?? Model.ThumbnailUrl;
+}
+
+<section class="section" style="padding-top:160px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;">
+        <div>
+            <div style="aspect-ratio:4/3;background:var(--dark-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                @if (!string.IsNullOrEmpty(primaryImage))
+                {
+                    <img src="@primaryImage" alt="@Model.Name" style="width:100%;height:100%;object-fit:cover;" />
+                }
+                else
+                {
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:6rem;color:var(--gold);opacity:0.2;">E</span>
+                }
+            </div>
+            @if (Model.Images?.Count > 1)
+            {
+                <div style="display:flex;gap:8px;margin-top:12px;">
+                    @foreach (var img in Model.Images.Take(4))
+                    {
+                        <div style="width:80px;height:60px;background:var(--dark-3);border:1px solid var(--border);overflow:hidden;cursor:pointer;">
+                            <img src="@img.ImageUrl" alt="@img.AltText" style="width:100%;height:100%;object-fit:cover;" />
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div>
+            <div class="product-category" style="margin-bottom:8px;">@Model.CategoryName</div>
+            <h2 style="margin-bottom:16px;">@Model.Name</h2>
+
+            <div class="product-price" style="margin-bottom:24px;">
+                <span class="price-current" style="font-size:1.5rem;" data-price-egp="@Model.EffectivePrice">ج.م @Model.EffectivePrice.ToString("N0")</span>
+                @if (Model.DiscountPrice.HasValue)
+                {
+                    <span class="price-original" style="font-size:1.1rem;" data-price-egp="@Model.Price">ج.م @Model.Price.ToString("N0")</span>
+                    <span class="badge badge-pending" style="font-size:0.65rem;">Save @((Model.Price - Model.EffectivePrice).ToString("N0"))</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.ShortDescription))
+            {
+                <p style="margin-bottom:24px;">@Model.ShortDescription</p>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Description))
+            {
+                <div style="margin-bottom:32px;">
+                    <div class="form-label" style="margin-bottom:8px;">Description</div>
+                    <p style="font-size:0.9rem;white-space:pre-line;">@Model.Description</p>
+                </div>
+            }
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;">
+                @if (!string.IsNullOrEmpty(Model.MaterialType))
+                {
+                    <div><span class="form-label">Material</span><p style="font-size:0.9rem;">@Model.MaterialType</p></div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Color))
+                {
+                    <div><span class="form-label">Color</span><p style="font-size:0.9rem;">@Model.Color</p></div>
+                }
+                @if (!string.IsNullOrEmpty(Model.FinishType))
+                {
+                    <div><span class="form-label">Finish</span><p style="font-size:0.9rem;">@Model.FinishType</p></div>
+                }
+                @if (Model.WidthCm.HasValue || Model.HeightCm.HasValue || Model.DepthCm.HasValue)
+                {
+                    <div>
+                        <span class="form-label">Dimensions</span>
+                        <p style="font-size:0.9rem;">
+                            @(Model.WidthCm?.ToString("F0") ?? "—") × @(Model.HeightCm?.ToString("F0") ?? "—") × @(Model.DepthCm?.ToString("F0") ?? "—") cm
+                        </p>
+                    </div>
+                }
+                @if (Model.WeightKg.HasValue)
+                {
+                    <div><span class="form-label">Weight</span><p style="font-size:0.9rem;">@Model.WeightKg.Value.ToString("F1") kg</p></div>
+                }
+                <div>
+                    <span class="form-label">Availability</span>
+                    <p style="font-size:0.9rem;color:@(Model.IsAvailable ? "#4CAF82" : "#CF6679");">@(Model.IsAvailable ? "In Stock" : "Made to Order")</p>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.Specifications))
+            {
+                <div style="margin-bottom:32px;">
+                    <div class="form-label" style="margin-bottom:8px;">Specifications</div>
+                    <div style="font-size:0.85rem;white-space:pre-line;color:var(--text);">@Model.Specifications</div>
+                </div>
+            }
+
+            <div style="display:flex;gap:16px;align-items:center;">
+                <div class="cart-qty">
+                    <button class="qty-btn" id="qty-dec">−</button>
+                    <input class="qty-input" id="qty-input" type="number" value="1" min="1" max="99" />
+                    <button class="qty-btn" id="qty-inc">+</button>
+                </div>
+                <button class="btn-primary" data-add-to-cart="@Model.Id" style="flex:1;justify-content:center;">
+                    Add to Cart
+                </button>
+                <button class="icon-btn" data-wishlist="@Model.Id" title="Add to Wishlist" style="width:52px;height:52px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+            </div>
+
+            @if (Model.AverageRating > 0)
+            {
+                <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);display:flex;align-items:center;gap:16px;">
+                    <div class="testimonial-stars">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <span class="star" style="color:@(i < Math.Round(Model.AverageRating) ? "var(--gold)" : "var(--dark-3)");">★</span>
+                        }
+                    </div>
+                    <span style="font-size:0.85rem;color:var(--text-muted);">@Model.AverageRating.ToString("F1") (@Model.ReviewCount reviews)</span>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+@{
+    var reviews = ViewBag.Reviews as IEnumerable<ReviewDto> ?? Enumerable.Empty<ReviewDto>();
+    bool isLoggedIn = User.Identity?.IsAuthenticated == true;
+}
+
+<section class="section" style="border-top:1px solid var(--border);">
+    <div class="section-header">
+        <span class="section-label">Share Your Experience</span>
+        <h2>Customer Reviews</h2>
+    </div>
+
+    @if (reviews.Any())
+    {
+        <div style="margin-bottom:48px;">
+            @foreach (var r in reviews)
+            {
+                <div style="padding:24px 0;border-bottom:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+                        <div style="display:flex;gap:4px;">
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                <span class="star" style="color:@(i < r.Rating ? "var(--gold)" : "var(--dark-3)");font-size:1rem;">★</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(r.Title))
+                        {
+                            <strong>@r.Title</strong>
+                        }
+                        <span style="font-size:0.8rem;color:var(--text-muted);">by @r.UserName</span>
+                    </div>
+                    <p style="font-size:0.9rem;">@r.Body</p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p style="text-align:center;color:var(--text-muted);padding:48px 0;">No reviews yet. Be the first to share your thoughts!</p>
+    }
+
+    @if (isLoggedIn)
+    {
+        <form method="post" action="/review/submit" style="max-width:500px;margin:0 auto;padding:32px;border:1px solid var(--border);border-radius:8px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="ProductId" value="@Model.Id" />
+            <div style="margin-bottom:16px;">
+                <label class="form-label">Rating</label>
+                <div class="star-input" style="display:flex;gap:4px;font-size:1.8rem;cursor:pointer;">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="star-select" data-value="@i" style="color:var(--dark-3);">★</span>
+                    }
+                </div>
+                <input type="hidden" name="Rating" id="rating-value" value="0" />
+            </div>
+            <div style="margin-bottom:16px;">
+                <label class="form-label">Title</label>
+                <input type="text" name="Title" class="form-input" placeholder="Summary of your review" />
+            </div>
+            <div style="margin-bottom:16px;">
+                <label class="form-label">Review</label>
+                <textarea name="Body" class="form-input" rows="4" placeholder="Share your experience with this product..." required></textarea>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Submit Review</button>
+        </form>
+    }
+    else
+    {
+        <p style="text-align:center;padding:32px 0;">
+            <a href="/account/login?returnUrl=@Context.Request.Path" style="color:var(--gold);">Sign in</a> to leave a review.
+        </p>
+    }
+</section>
+
+<script>
+    document.querySelectorAll('.star-select').forEach(el => {
+        el.addEventListener('click', () => {
+            const val = parseInt(el.dataset.value);
+            document.getElementById('rating-value').value = val;
+            document.querySelectorAll('.star-select').forEach((s, i) => {
+                s.style.color = i < val ? 'var(--gold)' : 'var(--dark-3)';
+            });
+        });
+    });
+</script>
+
+@if (related.Any())
+{
+    <section class="section" style="border-top:1px solid var(--border);">
+        <div class="section-header">
+            <span class="section-label">You May Also Like</span>
+            <h2>Related Pieces</h2>
+        </div>
+        <div class="product-grid">
+            @foreach (var product in related)
+            {
+                <div class="product-card">
+                    <div class="product-card-media">
+                        @if (!string.IsNullOrEmpty(product.ThumbnailUrl))
+                        {
+                            <img src="@product.ThumbnailUrl" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);display:flex;align-items:center;justify-content:center;">
+                                <span style="font-family:'Cormorant Garamond',serif;font-size:3rem;color:#C9A84C;opacity:0.4">E</span>
+                            </div>
+                        }
+                    </div>
+                    <div class="product-card-body">
+                        <div class="product-category">@product.CategoryName</div>
+                        <a href="/products/@product.Slug"><h3 class="product-name">@product.Name</h3></a>
+                        <div class="product-price">
+                            <span class="price-current" data-price-egp="@product.EffectivePrice">ج.م @product.EffectivePrice.ToString("N0")</span>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('qty-dec')?.addEventListener('click', () => {
+            const input = document.getElementById('qty-input');
+            if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+        });
+        document.getElementById('qty-inc')?.addEventListener('click', () => {
+            const input = document.getElementById('qty-input');
+            if (parseInt(input.value) < 99) input.value = parseInt(input.value) + 1;
+        });
+    </script>
+}

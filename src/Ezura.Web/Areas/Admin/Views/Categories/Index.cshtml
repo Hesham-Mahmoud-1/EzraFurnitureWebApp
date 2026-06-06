@@ -1,0 +1,58 @@
+@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Categories";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Categories</div>
+    <a href="/admin/categories/create" class="btn-primary" style="font-size:0.68rem;padding:10px 20px;">+ New Category</a>
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Products</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var cat in Model)
+                {
+                    <tr>
+                        <td><strong style="color:var(--cream);">@cat.Name</strong></td>
+                        <td style="color:var(--text-muted);font-size:0.8rem;">@cat.Slug</td>
+                        <td>@(cat.Products?.Count ?? 0)</td>
+                        <td>
+                            <span class="badge @(cat.IsActive ? "badge-completed" : "badge-cancelled")">
+                                @(cat.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/admin/categories/edit/@cat.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">Edit</a>
+                            <form method="post" action="/admin/categories/delete/@cat.Id" style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;color:#CF6679;border-color:rgba(207,102,121,0.3);" data-confirm="Delete this category?">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" style="text-align:center;padding:60px;color:var(--text-muted);">
+                        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px;">No categories yet</div>
+                        <a href="/admin/categories/create" class="btn-primary" style="font-size:0.68rem;">Create your first category</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

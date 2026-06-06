@@ -1,0 +1,128 @@
+@model SubmitCustomRequestDto
+@{
+    ViewData["Title"] = "Custom Order";
+}
+
+<section class="section" style="padding-top:160px;">
+    <div class="section-header centered">
+        <span class="section-label">Bespoke Service</span>
+        <h2>Have a Unique <em style="font-style:italic;color:var(--gold)">Vision</em>?</h2>
+        <p>Tell us about your dream piece — we'll design and build it to your exact specifications.</p>
+    </div>
+
+    <div style="max-width:800px;margin:0 auto;">
+        @if (TempData["Success"] != null)
+        {
+            <div style="background:rgba(76,175,130,0.08);border:1px solid rgba(76,175,130,0.3);padding:20px 24px;margin-bottom:32px;text-align:center;">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#4CAF82;margin-bottom:8px;">Request Submitted ✓</div>
+                <p style="font-size:0.9rem;">We'll review your request and get back to you within 24 hours.</p>
+            </div>
+        }
+
+        <form method="post" action="/custom-request/submit" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background:rgba(207,102,121,0.08);border:1px solid rgba(207,102,121,0.3);padding:16px 20px;margin-bottom:24px;">
+                    <div asp-validation-summary="All" style="font-size:0.82rem;color:#CF6679;"></div>
+                </div>
+            }
+
+            <h4 style="margin-bottom:24px;">Contact Information</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input class="form-control" asp-for="CustomerName" required placeholder="John Doe" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-control" asp-for="CustomerEmail" required type="email" placeholder="john@example.com" />
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label class="form-label">Phone</label>
+                    <input class="form-control" asp-for="CustomerPhone" required placeholder="+20 10 XXXXXXXX" />
+                </div>
+            </div>
+
+            <h4 style="margin-bottom:24px;">Furniture Details</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:40px;">
+                <div class="form-group">
+                    <label class="form-label">Furniture Type</label>
+                    <select class="form-select" asp-for="FurnitureType" required>
+                        <option value="">Select type...</option>
+                        <option value="Drafting Table">Drafting Table</option>
+                        <option value="Office Desk">Office Desk</option>
+                        <option value="Workstation">Workstation</option>
+                        <option value="Conference Table">Conference Table</option>
+                        <option value="Cabinet">Cabinet</option>
+                        <option value="Shelf">Shelf / Bookcase</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Budget Range</label>
+                    <select class="form-select" asp-for="BudgetRange">
+                        <option value="">Not sure yet</option>
+                        <option value="5000-10000">EGP 5,000 – 10,000</option>
+                        <option value="10000-20000">EGP 10,000 – 20,000</option>
+                        <option value="20000-50000">EGP 20,000 – 50,000</option>
+                        <option value="50000+">EGP 50,000+</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column:1/-1;">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" asp-for="Description" rows="5" required placeholder="Describe your ideal piece — style, function, dimensions, inspiration..."></textarea>
+                </div>
+            </div>
+
+            <h4 style="margin-bottom:24px;">Measurements & Preferences</h4>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:40px;">
+                <div class="form-group">
+                    <label class="form-label">Width (cm)</label>
+                    <input class="form-control" asp-for="WidthCm" type="number" step="0.1" placeholder="e.g. 180" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Height (cm)</label>
+                    <input class="form-control" asp-for="HeightCm" type="number" step="0.1" placeholder="e.g. 75" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Depth (cm)</label>
+                    <input class="form-control" asp-for="DepthCm" type="number" step="0.1" placeholder="e.g. 90" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Preferred Material</label>
+                    <select class="form-select" asp-for="PreferredMaterial">
+                        <option value="">Any</option>
+                        <option value="Oak Wood">Oak Wood</option>
+                        <option value="Walnut Wood">Walnut Wood</option>
+                        <option value="Teak Wood">Teak Wood</option>
+                        <option value="Mahogany">Mahogany</option>
+                        <option value="Steel">Steel / Metal</option>
+                        <option value="Glass">Glass</option>
+                        <option value="Mixed">Mixed Materials</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Color</label>
+                    <input class="form-control" asp-for="PreferredColor" placeholder="e.g. Dark walnut" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Required By</label>
+                    <input class="form-control" asp-for="RequiredByDate" type="date" />
+                </div>
+            </div>
+
+            <h4 style="margin-bottom:24px;">Upload Sketches / References</h4>
+            <div class="form-group" style="margin-bottom:40px;">
+                <label class="form-label" style="margin-bottom:12px;">Attach up to 5 images</label>
+                <input class="form-control" type="file" name="attachments" multiple accept="image/*" style="padding:40px 16px;text-align:center;cursor:pointer;" />
+                <p style="font-size:0.78rem;color:var(--text-muted);margin-top:8px;">Accepted: JPG, PNG, WebP. Max 5 files.</p>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;padding:20px;">
+                Submit Custom Request
+            </button>
+        </form>
+    </div>
+</section>

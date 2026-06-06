@@ -1,0 +1,18 @@
+.rtl-layout { direction: rtl; }
+.rtl-layout .nav-links { padding-right: 0; }
+.rtl-layout .nav-actions { margin-right: auto; margin-left: 0; }
+.rtl-layout .footer-grid { direction: rtl; }
+.rtl-layout .cart-layout { direction: rtl; }
+.rtl-layout .cart-layout > div:last-child { margin-right: 40px; margin-left: 0; }
+.rtl-layout .order-summary .summary-row { flex-direction: row-reverse; }
+.rtl-layout .product-grid { direction: rtl; }
+.rtl-layout .form-group label { text-align: right; }
+.rtl-layout .account-dropdown { left: 0; right: auto; }
+.rtl-layout .currency-dropdown,
+.rtl-layout .language-dropdown { left: 0; right: auto; }
+.rtl-layout .search-input { text-align: right; }
+.rtl-layout .footer-col ul { padding-right: 0; }
+.rtl-layout .footer-contact p { direction: ltr; text-align: right; }
+@media (max-width:768px) {
+    .rtl-layout .mobile-menu-toggle { margin-right: auto; margin-left: 0; }
+}

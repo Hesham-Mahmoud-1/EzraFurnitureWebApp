@@ -1,0 +1,63 @@
+@model IEnumerable<OrderDto>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<section class="section" style="padding-top:160px;">
+    <div style="max-width:900px;margin:0 auto;">
+        <div style="margin-bottom:48px;">
+            <span class="section-label">Account</span>
+            <h2>My Orders</h2>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="admin-table-wrapper">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Date</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
+                        {
+                            <tr>
+                                <td><span style="color:var(--gold);font-weight:600;">@order.OrderNumber</span></td>
+                                <td style="color:var(--text-muted);font-size:0.78rem;">@order.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td>@order.Items.Count item(s)</td>
+                                <td><span style="color:var(--gold);">ج.م @order.TotalAmount.ToString("N0")</span></td>
+                                <td>
+                                    @{
+                                        var badgeClass = order.Status switch {
+                                            OrderStatus.Pending => "badge-pending",
+                                            OrderStatus.Completed => "badge-completed",
+                                            OrderStatus.Cancelled => "badge-cancelled",
+                                            OrderStatus.Shipped or OrderStatus.Delivered => "badge-shipped",
+                                            _ => "badge-active"
+                                        };
+                                    }
+                                    <span class="badge @badgeClass">@order.StatusName</span>
+                                </td>
+                                <td><a href="/account/orders/@order.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">View</a></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+        else
+        {
+            <div style="text-align:center;padding:80px 0;color:var(--text-muted);">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px;">No orders yet</div>
+                <p style="font-size:0.9rem;margin-bottom:32px;">When you place an order, it will appear here.</p>
+                <a href="/products" class="btn-primary">Browse Collection</a>
+            </div>
+        }
+    </div>
+</section>

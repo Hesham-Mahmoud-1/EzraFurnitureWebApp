@@ -1,0 +1,289 @@
+@model Ezura.Core.DTOs.DashboardStatsDto
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div>
+        <div class="admin-page-title">Dashboard</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">
+            @DateTime.Now.ToString("dddd, MMMM d yyyy") — Welcome back
+        </p>
+    </div>
+    <div style="display:flex;gap:12px;">
+        <a href="/admin/reports/revenue" class="btn-secondary" style="font-size:0.68rem;padding:10px 20px;">
+            Export Report
+        </a>
+        <a href="/admin/orders" class="btn-primary" style="font-size:0.68rem;padding:10px 20px;">
+            View Orders
+        </a>
+    </div>
+</div>
+
+<!-- ── KPI Cards ─────────────────────────────────────────────────── -->
+<div class="kpi-grid">
+    <div class="kpi-card">
+        <div class="kpi-label">Today's Revenue</div>
+        <div class="kpi-value" data-price-egp="@Model.TodayRevenue">ج.م @Model.TodayRevenue.ToString("N0")</div>
+        <div class="kpi-change">Today</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Monthly Revenue</div>
+        <div class="kpi-value" data-price-egp="@Model.MonthRevenue">ج.م @Model.MonthRevenue.ToString("N0")</div>
+        <div class="kpi-change">This month</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Outstanding Payments</div>
+        <div class="kpi-value" style="color:#CF6679;" data-price-egp="@Model.OutstandingPayments">ج.م @Model.OutstandingPayments.ToString("N0")</div>
+        <div class="kpi-change down">Awaiting collection</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Total Revenue</div>
+        <div class="kpi-value" data-price-egp="@Model.TotalRevenue">ج.م @Model.TotalRevenue.ToString("N0")</div>
+        <div class="kpi-change up">All time</div>
+    </div>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns:repeat(5,1fr);">
+    <div class="kpi-card">
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-value">@Model.TotalOrders</div>
+        <div class="kpi-change">@Model.PendingOrders pending</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Customers</div>
+        <div class="kpi-value">@Model.TotalCustomers</div>
+        <div class="kpi-change up">+@Model.NewCustomersThisMonth this month</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Registered Users</div>
+        <div class="kpi-value">@((int)(ViewBag.TotalRegisteredUsers ?? 0))</div>
+        <div class="kpi-change">All roles</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Products</div>
+        <div class="kpi-value">@Model.TotalProducts</div>
+        <div class="kpi-change @(Model.LowStockProducts > 0 ? "down" : "")">
+            @(Model.LowStockProducts > 0 ? $"{Model.LowStockProducts} low stock" : "Stock healthy")
+        </div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Custom Requests</div>
+        <div class="kpi-value">@Model.PendingCustomRequests</div>
+        <div class="kpi-change">Pending review</div>
+    </div>
+</div>
+
+<!-- ── Charts Row ────────────────────────────────────────────────── -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;">
+    <!-- Revenue Chart -->
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <div>
+                <div class="kpi-label">Revenue Trend</div>
+                <div style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--cream);">Last 30 Days</div>
+            </div>
+        </div>
+        <canvas id="revenueChart" height="200"></canvas>
+    </div>
+
+    <!-- Order Status Donut -->
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label" style="margin-bottom:16px;">Order Status</div>
+        <canvas id="statusChart" height="200"></canvas>
+        <div style="margin-top:16px;" id="status-legend"></div>
+    </div>
+</div>
+
+<!-- ── Tables Row ────────────────────────────────────────────────── -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <!-- Top Products -->
+    <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;">Top Products</div>
+            <a href="/admin/products" style="font-size:0.68rem;color:var(--gold);">View All →</a>
+        </div>
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Sold</th>
+                        <th>Revenue</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.TopProducts?.Any() == true)
+                    {
+                        @foreach (var p in Model.TopProducts)
+                        {
+                            <tr>
+                                <td><strong style="color:var(--cream);">@p.Name</strong></td>
+                                <td>@p.TotalSold</td>
+                                <td><span style="color:var(--gold);">ج.م @p.TotalRevenue.ToString("N0")</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:32px;">No data yet</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top Customers -->
+    <div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;">Top Customers</div>
+            <a href="/admin/customers" style="font-size:0.68rem;color:var(--gold);">View All →</a>
+        </div>
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Customer</th>
+                        <th>Orders</th>
+                        <th>Spent</th>
+                        <th>Outstanding</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.TopCustomers?.Any() == true)
+                    {
+                        @foreach (var c in Model.TopCustomers)
+                        {
+                            <tr>
+                                <td>
+                                    <div style="color:var(--cream);font-weight:500;">@c.Name</div>
+                                    <div style="font-size:0.72rem;color:var(--text-muted);">@c.Email</div>
+                                </td>
+                                <td>@c.TotalOrders</td>
+                                <td><span style="color:var(--gold);">ج.م @c.TotalSpent.ToString("N0")</span></td>
+                                <td><span style="color:@(c.OutstandingBalance > 0 ? "#CF6679" : "var(--text-muted)");">ج.م @c.OutstandingBalance.ToString("N0")</span></td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:32px;">No data yet</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ── Low Stock Alert ───────────────────────────────────────────── -->
+@if (ViewBag.LowStockItems is IEnumerable<Ezura.Core.DTOs.InventoryItemDto> lowStock && lowStock.Any())
+{
+    <div style="background:rgba(207,102,121,0.08);border:1px solid rgba(207,102,121,0.3);padding:20px 24px;margin-bottom:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div style="color:#CF6679;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">
+                ⚠ Low Stock Alert — @lowStock.Count() items
+            </div>
+            <a href="/admin/inventory" style="font-size:0.68rem;color:#CF6679;">Manage Inventory →</a>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            @foreach (var item in lowStock.Take(6))
+            {
+                <span style="background:rgba(207,102,121,0.15);color:#CF6679;padding:4px 12px;font-size:0.7rem;letter-spacing:0.1em;">
+                    @item.Name (@item.CurrentStock @item.Unit)
+                </span>
+            }
+        </div>
+    </div>
+}
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+Chart.defaults.color = '#8B8278';
+Chart.defaults.borderColor = 'rgba(139,115,85,0.2)';
+
+// Revenue chart
+const revenueData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    (Model.RevenueChart?.Select(d => new { label = d.Label, value = (double)d.Revenue })
+     ?? Enumerable.Empty<object>()).ToArray()));
+
+new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: {
+        labels: revenueData.map(d => d.label),
+        datasets: [{
+            label: 'Revenue (EGP)',
+            data: revenueData.map(d => d.value),
+            borderColor: '#C9A84C',
+            backgroundColor: 'rgba(201,168,76,0.08)',
+            borderWidth: 2,
+            pointRadius: 3,
+            pointBackgroundColor: '#C9A84C',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            x: { grid: { color: 'rgba(139,115,85,0.1)' }, ticks: { maxTicksLimit: 8 } },
+            y: {
+                grid: { color: 'rgba(139,115,85,0.1)' },
+                ticks: { callback: v => 'ج.م ' + v.toLocaleString() }
+            }
+        }
+    }
+});
+
+// Status donut
+const statusData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+    Model.OrderStatusDistribution ?? new Dictionary<string, int>()));
+
+const statusColors = {
+    'Pending': '#FFC107', 'DepositReceived': '#42A5F5', 'InDesign': '#AB47BC',
+    'InProduction': '#26A69A', 'ReadyForShipping': '#7E57C2', 'Shipped': '#5C6BC0',
+    'Delivered': '#66BB6A', 'Completed': '#C9A84C', 'Cancelled': '#CF6679'
+};
+
+const statusLabels = Object.keys(statusData);
+const statusValues = Object.values(statusData);
+
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: statusLabels,
+        datasets: [{
+            data: statusValues,
+            backgroundColor: statusLabels.map(l => statusColors[l] || '#666'),
+            borderWidth: 0,
+            hoverOffset: 4
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false }
+        },
+        cutout: '65%'
+    }
+});
+
+// Legend
+const legend = document.getElementById('status-legend');
+statusLabels.forEach((label, i) => {
+    if (statusValues[i] === 0) return;
+    const row = document.createElement('div');
+    row.style = 'display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:0.7rem;';
+    row.innerHTML = `
+        <span style="display:flex;align-items:center;gap:6px;color:var(--text-muted);">
+            <span style="width:8px;height:8px;border-radius:50%;background:${statusColors[label]||'#666'};display:inline-block;"></span>
+            ${label}
+        </span>
+        <span style="color:var(--cream);font-weight:600;">${statusValues[i]}</span>`;
+    legend.appendChild(row);
+});
+</script>
+}
+

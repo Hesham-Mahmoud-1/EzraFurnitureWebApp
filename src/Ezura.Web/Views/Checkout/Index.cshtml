@@ -1,0 +1,116 @@
+@model Ezura.Core.DTOs.CreateOrderDto
+@{
+    ViewData["Title"] = "Checkout";
+    var cart = ViewBag.Cart as CartDto;
+}
+
+<section class="section" style="padding-top:120px;">
+    <div class="section-header">
+        <span class="section-label">Checkout</span>
+        <h2>Complete Your Order</h2>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 380px;gap:80px;">
+        <div>
+            <form method="post" action="/checkout/place">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div style="background:rgba(207,102,121,0.08);border:1px solid rgba(207,102,121,0.3);padding:16px 20px;margin-bottom:24px;">
+                        <div asp-validation-summary="All" style="font-size:0.82rem;color:#CF6679;"></div>
+                    </div>
+                }
+
+                <div style="margin-bottom:40px;">
+                    <h4 style="margin-bottom:24px;">Contact Information</h4>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input class="form-control" asp-for="CustomerName" required placeholder="John Doe" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input class="form-control" asp-for="CustomerEmail" required type="email" placeholder="john@example.com" />
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1;">
+                            <label class="form-label">Phone</label>
+                            <input class="form-control" asp-for="CustomerPhone" required placeholder="+20 10 XXXXXXXX" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:40px;">
+                    <h4 style="margin-bottom:24px;">Shipping Address</h4>
+                    <div class="form-group">
+                        <label class="form-label">Address</label>
+                        <input class="form-control" asp-for="ShippingAddress" required placeholder="Street, building, apartment" />
+                    </div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                        <div class="form-group">
+                            <label class="form-label">City</label>
+                            <input class="form-control" asp-for="ShippingCity" required placeholder="Cairo" />
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Country</label>
+                            <input class="form-control" asp-for="ShippingCountry" required placeholder="Egypt" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:40px;">
+                    <h4 style="margin-bottom:24px;">Payment Method</h4>
+                    <div style="display:flex;flex-wrap:wrap;gap:12px;">
+                        @foreach (var method in new[] {
+                            (name: "Cash on Delivery", value: "0"),
+                            (name: "Bank Transfer", value: "1"),
+                            (name: "InstaPay", value: "3"),
+                            (name: "Vodafone Cash", value: "4")
+                        })
+                        {
+                            <label style="display:flex;align-items:center;gap:8px;padding:12px 20px;border:1px solid var(--border);cursor:pointer;background:var(--dark-2);">
+                                <input type="radio" asp-for="PaymentMethod" value="@method.value" />
+                                <span style="font-size:0.85rem;color:var(--cream);">@method.name</span>
+                            </label>
+                        }
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Order Notes (Optional)</label>
+                    <textarea class="form-control" asp-for="Notes" placeholder="Special instructions, delivery preferences..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Place Order</button>
+            </form>
+        </div>
+
+        <div>
+            <div class="order-summary">
+                <h4 style="margin-bottom:24px;">Order Summary</h4>
+                @if (cart != null)
+                {
+                    @foreach (var item in cart.Items)
+                    {
+                        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.82rem;">
+                            <span style="color:var(--cream);">@item.ProductName × @item.Quantity</span>
+                            <span style="color:var(--gold);" data-price-egp="@item.TotalPrice">ج.م @item.TotalPrice.ToString("N0")</span>
+                        </div>
+                    }
+                    <div class="summary-row" style="margin-top:16px;">
+                        <span>Subtotal</span>
+                        <span class="amount" data-price-egp="@cart.SubTotal">ج.م @cart.SubTotal.ToString("N0")</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span style="color:var(--text-muted);">TBD</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span class="amount" style="font-size:1.3rem;" data-price-egp="@cart.SubTotal">ج.م @cart.SubTotal.ToString("N0")</span>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</section>

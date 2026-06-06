@@ -1,0 +1,105 @@
+@model IEnumerable<ApplicationUser>
+@{
+    ViewData["Title"] = "Users";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div>
+        <div class="admin-page-title">Administration Users</div>
+        <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">
+            @ViewBag.TotalCount admin users
+        </p>
+    </div>
+    <a href="/admin/users/createadmin" class="btn-primary" style="padding:10px 20px;font-size:0.68rem;">+ Create Admin</a>
+</div>
+
+<div style="background:var(--dark-2);border:1px solid var(--border);padding:20px 24px;margin-bottom:20px;">
+    <form method="get" style="display:flex;gap:16px;align-items:flex-end;">
+        <div>
+            <label class="form-label">Search</label>
+            <input class="form-control" name="search" value="@ViewBag.Search" placeholder="Name or email..." style="width:280px;" />
+        </div>
+        <button type="submit" class="btn-primary" style="padding:12px 24px;font-size:0.68rem;">Search</button>
+        <a href="/admin/users" class="btn-secondary" style="padding:12px 24px;font-size:0.68rem;">Clear</a>
+    </form>
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Roles</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Last Login</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var user in Model)
+                {
+                    var roles = ViewBag.UserRoles?[user.Id] as IList<string> ?? new List<string>();
+                    <tr>
+                        <td>
+                            <div style="color:var(--cream);font-weight:500;">@user.FullName</div>
+                        </td>
+                        <td style="color:var(--text-muted);font-size:0.8rem;">@user.Email</td>
+                        <td>
+                            @foreach (var r in roles)
+                            {
+                                <span class="badge @(r == "SuperAdmin" ? "badge-completed" : "badge-pending")" style="margin:1px;">@r</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge @(user.IsActive ? "badge-completed" : "badge-cancelled")">
+                                @(user.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">
+                            @(user.LastLoginAt?.ToString("dd MMM yyyy") ?? "—")
+                        </td>
+                        <td>
+                            <a href="/admin/users/details/@user.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">View</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7" style="text-align:center;padding:60px;color:var(--text-muted);">
+                        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px;">No admin users found</div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@{
+    var totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / 20);
+    var page = (int)ViewBag.Page;
+}
+@if (totalPages > 1)
+{
+    <div class="pagination">
+        @if (page > 1)
+        {
+            <a href="?page=@(page - 1)&search=@ViewBag.Search" class="page-link">‹</a>
+        }
+        @for (int i = Math.Max(1, page - 2); i <= Math.Min(totalPages, page + 2); i++)
+        {
+            <a href="?page=@i&search=@ViewBag.Search" class="page-link @(i == page ? "active" : "")">@i</a>
+        }
+        @if (page < totalPages)
+        {
+            <a href="?page=@(page + 1)&search=@ViewBag.Search" class="page-link">›</a>
+        }
+    </div>
+}

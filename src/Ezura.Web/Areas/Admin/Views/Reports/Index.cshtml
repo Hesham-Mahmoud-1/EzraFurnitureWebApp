@@ -1,0 +1,19 @@
+@{
+    ViewData["Title"] = "Reports";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Reports</div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+    <a href="/admin/reports/revenue" style="display:block;background:var(--dark-2);border:1px solid var(--border);padding:40px;text-decoration:none;transition:all 0.35s;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);margin-bottom:8px;">Revenue</div>
+        <p style="font-size:0.9rem;">View revenue reports, daily and monthly breakdowns, export data.</p>
+    </a>
+    <a href="/admin/reports/sales" style="display:block;background:var(--dark-2);border:1px solid var(--border);padding:40px;text-decoration:none;transition:all 0.35s;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);margin-bottom:8px;">Sales</div>
+        <p style="font-size:0.9rem;">Sales analytics, order completion rates, top products, export data.</p>
+    </a>
+</div>

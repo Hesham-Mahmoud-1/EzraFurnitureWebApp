@@ -1,0 +1,117 @@
+@model ApplicationUser
+@{
+    ViewData["Title"] = "User — " + Model.FullName;
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var roles = ViewBag.Roles as IList<string> ?? new List<string>();
+    var orders = ViewBag.Orders as IEnumerable<OrderDto> ?? Enumerable.Empty<OrderDto>();
+}
+
+<div class="admin-topbar">
+    <a href="/admin/users" style="font-size:0.68rem;color:var(--gold);margin-bottom:8px;display:inline-block;">← Back to Users</a>
+    <div class="admin-page-title">@Model.FullName</div>
+    <p style="font-size:0.78rem;color:var(--text-muted);margin-top:4px;">@Model.Email</p>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <!-- User Info -->
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:24px;">
+        <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:20px;">Account Details</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:0.8rem;">
+            <div style="color:var(--text-muted);">First Name</div>
+            <div style="color:var(--cream);">@Model.FirstName</div>
+            <div style="color:var(--text-muted);">Last Name</div>
+            <div style="color:var(--cream);">@Model.LastName</div>
+            <div style="color:var(--text-muted);">Phone</div>
+            <div style="color:var(--cream);">@(Model.PhoneNumber ?? "—")</div>
+            <div style="color:var(--text-muted);">Registered</div>
+            <div style="color:var(--cream);">@Model.CreatedAt.ToString("dd MMM yyyy HH:mm")</div>
+            <div style="color:var(--text-muted);">Last Login</div>
+            <div style="color:var(--cream);">@(Model.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</div>
+            <div style="color:var(--text-muted);">Status</div>
+            <div>
+                <span class="badge @(Model.IsActive ? "badge-completed" : "badge-cancelled")">@(Model.IsActive ? "Active" : "Inactive")</span>
+            </div>
+            <div style="color:var(--text-muted);">Lifetime Value</div>
+            <div style="color:var(--gold);">ج.م @(((decimal?)ViewBag.LifetimeValue ?? 0).ToString("N0"))</div>
+        </div>
+
+        <div style="margin-top:20px;display:flex;gap:8px;">
+            <form method="post" action="/admin/users/toggleactive/@Model.Id">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn-secondary" style="font-size:0.68rem;padding:10px 20px;color:@(Model.IsActive ? "#CF6679" : "#66BB6A");border-color:@(Model.IsActive ? "rgba(207,102,121,0.3)" : "rgba(102,187,106,0.3)");">
+                    @(Model.IsActive ? "Deactivate" : "Activate")
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Roles -->
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:24px;">
+        <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;margin-bottom:20px;">Roles</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+            @foreach (var role in roles)
+            {
+                <span style="background:var(--gold-dim);color:var(--gold);padding:4px 16px;font-size:0.7rem;letter-spacing:0.1em;border-radius:2px;">@role</span>
+            }
+            @if (!roles.Any())
+            {
+                <span style="color:var(--text-muted);font-size:0.8rem;">No roles assigned</span>
+            }
+        </div>
+
+        <form method="post" action="/admin/users/assignrole/@Model.Id" style="display:flex;gap:8px;align-items:flex-end;">
+            @Html.AntiForgeryToken()
+            <div style="flex:1;">
+                <label class="form-label">Assign Role</label>
+                <select name="role" class="form-select">
+                    <option value="Customer">Customer</option>
+                    <option value="Manager">Manager</option>
+                    <option value="SalesEmployee">Sales Employee</option>
+                    <option value="ProductionEmployee">Production Employee</option>
+                    <option value="ShippingEmployee">Shipping Employee</option>
+                    <option value="CustomerSupport">Customer Support</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary" style="padding:12px 20px;font-size:0.68rem;">Assign</button>
+        </form>
+    </div>
+</div>
+
+<!-- Orders -->
+<div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);font-weight:600;">Order History (@orders.Count())</div>
+    </div>
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (orders.Any())
+                {
+                    @foreach (var order in orders)
+                    {
+                        <tr>
+                            <td><a href="/admin/orders/@order.Id" style="color:var(--gold);font-weight:600;">@order.OrderNumber</a></td>
+                            <td style="color:var(--gold);">ج.م @order.TotalAmount.ToString("N0")</td>
+                            <td><span class="badge badge-active">@order.StatusName</span></td>
+                            <td style="color:var(--text-muted);font-size:0.78rem;">@order.CreatedAt.ToString("dd MMM yyyy")</td>
+                            <td><a href="/admin/orders/@order.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">View</a></td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr><td colspan="5" style="text-align:center;padding:32px;color:var(--text-muted);">No orders yet</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,247 @@
+@using Microsoft.Extensions.Localization
+@using Ezura.Web.Resources
+@inject IStringLocalizer<SharedResources> Localizer
+@{
+    var culture = System.Globalization.CultureInfo.CurrentCulture.Name;
+    var isRtl = culture.StartsWith("ar");
+    var langAttr = isRtl ? "ar" : "en";
+    var dirAttr = isRtl ? "rtl" : "ltr";
+}
+<!DOCTYPE html>
+<html lang="@langAttr" data-currency="EGP" dir="@dirAttr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@(ViewData["Title"] != null ? ViewData["Title"] + " — " : "")EZURA · Premium Furniture</title>
+    <meta name="description" content="@(ViewData["MetaDescription"] ?? "Ezura — Handcrafted premium furniture for architects, engineers and designers. Made in Cairo, Egypt.")" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&family=IM+Fell+English&display=swap" rel="stylesheet" />
+    @if (isRtl)
+    {
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet" />
+    }
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    @if (isRtl)
+    {
+        <link rel="stylesheet" href="~/css/rtl.css" asp-append-version="true" />
+    }
+    <link rel="icon" type="image/svg+xml" href="~/images/favicon.svg" />
+</head>
+<body class="ezura-body @(isRtl ? "rtl-layout" : "")">
+
+    <!-- ══ NAVIGATION ═══════════════════════════════════════════════════ -->
+    <header class="ezura-header" id="site-header">
+        <nav class="ezura-nav">
+            <a href="/" class="brand-logo">
+                <span class="brand-e">E</span>ZURA
+            </a>
+
+            <ul class="nav-links" id="nav-menu">
+                <li><a href="/products" class="nav-link">@Localizer["Collection"]</a></li>
+                <li><a href="/portfolio" class="nav-link">@Localizer["Portfolio"]</a></li>
+                <li><a href="/custom-request" class="nav-link">@Localizer["CustomOrder"]</a></li>
+                <li><a href="/home/about" class="nav-link">@Localizer["About"]</a></li>
+                <li><a href="/home/contact" class="nav-link">@Localizer["Contact"]</a></li>
+            </ul>
+
+            <div class="nav-actions">
+                <!-- Language Switcher -->
+                <div class="language-selector">
+                    <button class="icon-btn lang-btn" title="@Localizer["Language"]">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                        </svg>
+                    </button>
+                    <div class="language-dropdown">
+                        <form method="post" action="/home/set-language">
+                            <input type="hidden" name="culture" value="en" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="@(culture == "en" ? "active" : "")">English</button>
+                        </form>
+                        <form method="post" action="/home/set-language">
+                            <input type="hidden" name="culture" value="ar" />
+                            <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
+                            <button type="submit" class="@(culture.StartsWith("ar") ? "active" : "")">العربية</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Currency Selector -->
+                <div class="currency-selector" id="currency-selector">
+                    <button class="icon-btn currency-btn" title="@Localizer["ChangeCurrency"]">
+                        <span id="current-currency">EGP</span>
+                        <svg width="10" height="6" viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+                    </button>
+                    <div class="currency-dropdown" id="currency-dropdown">
+                        <button onclick="setCurrency('EGP')">EGP — Egyptian Pound</button>
+                        <button onclick="setCurrency('USD')">USD — US Dollar</button>
+                        <button onclick="setCurrency('EUR')">EUR — Euro</button>
+                        <button onclick="setCurrency('GBP')">GBP — British Pound</button>
+                        <button onclick="setCurrency('SAR')">SAR — Saudi Riyal</button>
+                        <button onclick="setCurrency('AED')">AED — UAE Dirham</button>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <button class="icon-btn" id="search-toggle" title="@Localizer["Search"]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+                    </svg>
+                </button>
+
+                <!-- Wishlist -->
+                <a href="/wishlist" class="icon-btn" title="@Localizer["Wishlist"]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                    </svg>
+                </a>
+
+                <!-- Cart -->
+                <a href="/cart" class="icon-btn cart-icon" title="@Localizer["Cart"]">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                        <line x1="3" y1="6" x2="21" y2="6"/>
+                        <path d="M16 10a4 4 0 0 1-8 0"/>
+                    </svg>
+                    <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+                </a>
+
+                <!-- Account -->
+                @if (User.Identity?.IsAuthenticated == true)
+                {
+                    <div class="account-menu">
+                        <button class="icon-btn account-btn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                            <span class="notification-dot" id="notif-dot" style="display:none"></span>
+                        </button>
+                        <div class="account-dropdown">
+                            <a href="/account/profile">@Localizer["MyProfile"]</a>
+                            <a href="/account/orders">@Localizer["MyOrders"]</a>
+                            <a href="/wishlist">@Localizer["Wishlist"]</a>
+                            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Manager"))
+                            {
+                                <div class="dropdown-divider"></div>
+                                <a href="/admin/dashboard">@Localizer["AdminPanel"]</a>
+                            }
+                            <div class="dropdown-divider"></div>
+                            <form method="post" action="/account/logout">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="dropdown-logout">@Localizer["SignOut"]</button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a href="/account/login" class="nav-cta">@Localizer["SignIn"]</a>
+                }
+
+                <!-- Mobile menu toggle -->
+                <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="@Localizer["Menu"]">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Search overlay -->
+        <div class="search-overlay" id="search-overlay">
+            <div class="search-inner">
+                <form action="/products/search" method="get">
+                    <input type="text" name="q" class="search-input" placeholder="@Localizer["SearchPlaceholder"]" autofocus />
+                    <button type="submit" class="search-submit">@Localizer["Search"]</button>
+                </form>
+                <button class="search-close" id="search-close">✕</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ══ MAIN CONTENT ═══════════════════════════════════════════════════ -->
+    <main class="ezura-main">
+        @if (TempData["Success"] != null)
+        {
+            <div class="toast toast-success" id="flash-toast">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="toast toast-error" id="flash-toast">@TempData["Error"]</div>
+        }
+
+        @RenderBody()
+    </main>
+
+    <!-- ══ FOOTER ═══════════════════════════════════════════════════════ -->
+    <footer class="ezura-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <div class="footer-logo">EZURA</div>
+                <p>@Localizer["FooterDescription"]</p>
+                <div class="social-links">
+                    <a href="#" aria-label="Instagram">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Facebook">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-col">
+                <h4>@Localizer["CollectionHeading"]</h4>
+                <ul>
+                    <li><a href="/products?categoryId=1">@Localizer["DraftingTables"]</a></li>
+                    <li><a href="/products?categoryId=2">@Localizer["OfficeDesks"]</a></li>
+                    <li><a href="/products?categoryId=3">@Localizer["Workstations"]</a></li>
+                    <li><a href="/products?categoryId=4">@Localizer["DesignerPieces"]</a></li>
+                    <li><a href="/custom-request">@Localizer["CustomOrders"]</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>@Localizer["Company"]</h4>
+                <ul>
+                    <li><a href="/home/about">@Localizer["AboutEzura"]</a></li>
+                    <li><a href="/portfolio">@Localizer["PortfolioLink"]</a></li>
+                    <li><a href="/home/contact">@Localizer["ContactLink"]</a></li>
+                    <li><a href="#">@Localizer["Careers"]</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <h4>@Localizer["Support"]</h4>
+                <ul>
+                    <li><a href="/account/orders">@Localizer["TrackOrder"]</a></li>
+                    <li><a href="#">@Localizer["ShippingPolicy"]</a></li>
+                    <li><a href="#">@Localizer["CareGuide"]</a></li>
+                    <li><a href="#">@Localizer["FAQ"]</a></li>
+                </ul>
+                <div class="footer-contact">
+                    <p>📞 +20-10-XXXX-XXXX</p>
+                    <p>✉️ info@ezura.com</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© @DateTime.Now.Year @Localizer["Copyright"]</p>
+            <div class="footer-links">
+                <a href="#">@Localizer["PrivacyPolicy"]</a>
+                <a href="#">@Localizer["TermsOfService"]</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,99 @@
+@model OrderDto
+@using Ezura.Core.Enums
+@{
+    ViewData["Title"] = $"Order {Model.OrderNumber}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div>
+        <div style="display:flex;align-items:center;gap:16px;">
+            <a href="/admin/orders" style="color:var(--text-muted);font-size:0.82rem;">← Orders</a>
+            <div class="admin-page-title">@Model.OrderNumber</div>
+            <span class="badge badge-pending">@Model.StatusName</span>
+        </div>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a href="/admin/orders/export?search=@Model.OrderNumber&format=excel" class="btn-secondary" style="font-size:0.68rem;padding:10px 20px;">Export</a>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label">Customer</div>
+        <p style="color:var(--cream);font-weight:500;font-size:1.1rem;">@Model.CustomerName</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">@Model.CustomerEmail</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">@Model.CustomerPhone</p>
+    </div>
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label">Shipping</div>
+        <p style="font-size:0.9rem;color:var(--cream);">@Model.ShippingAddress</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">@Model.ShippingCity, @Model.ShippingCountry</p>
+        @if (Model.Shipment != null)
+        {
+            <p style="font-size:0.85rem;color:var(--gold);">Tracking: @Model.Shipment.TrackingNumber</p>
+        }
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+    <div class="kpi-card"><div class="kpi-label">Subtotal</div><div class="kpi-value" style="font-size:1.4rem;">ج.م @Model.SubTotal.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Deposit</div><div class="kpi-value" style="font-size:1.4rem;color:#4CAF82;">ج.م @Model.DepositAmount.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Outstanding</div><div class="kpi-value" style="font-size:1.4rem;color:#CF6679;">ج.م @Model.RemainingAmount.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Total</div><div class="kpi-value" style="font-size:1.4rem;">ج.م @Model.TotalAmount.ToString("N0")</div></div>
+</div>
+
+@if (Model.Notes != null)
+{
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:20px 24px;margin-bottom:24px;">
+        <div class="kpi-label">Customer Notes</div>
+        <p style="font-size:0.9rem;color:var(--cream);">@Model.Notes</p>
+    </div>
+}
+
+<div class="admin-table-wrapper" style="margin-bottom:24px;">
+    <table class="admin-table">
+        <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Total</th><th>Notes</th></tr></thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td style="color:var(--cream);font-weight:500;">@item.ProductName</td>
+                    <td>@item.Quantity</td>
+                    <td>ج.م @item.UnitPrice.ToString("N0")</td>
+                    <td style="color:var(--gold);">ج.م @item.TotalPrice.ToString("N0")</td>
+                    <td style="font-size:0.78rem;color:var(--text-muted);">@item.CustomizationNotes</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label" style="margin-bottom:16px;">Update Status</div>
+        <form method="post" action="/admin/orders/@Model.Id/updatestatus" style="display:flex;gap:12px;">
+            @Html.AntiForgeryToken()
+            <select class="form-select" name="status" style="flex:1;">
+                @foreach (OrderStatus s in Enum.GetValues<OrderStatus>())
+                {
+                    <option value="@((int)s)" selected="@(Model.Status == s)">@s</option>
+                }
+            </select>
+            <button type="submit" class="btn-primary" style="padding:12px 20px;font-size:0.68rem;">Update</button>
+        </form>
+    </div>
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label" style="margin-bottom:16px;">Record Payment</div>
+        <form method="post" action="/admin/orders/@Model.Id/recordpayment" style="display:flex;gap:12px;">
+            @Html.AntiForgeryToken()
+            <input class="form-control" name="amount" type="number" step="0.01" placeholder="Amount" style="width:120px;" required />
+            <select class="form-select" name="method" style="flex:1;">
+                <option value="1">Bank Transfer</option>
+                <option value="3">InstaPay</option>
+                <option value="4">Vodafone Cash</option>
+            </select>
+            <button type="submit" class="btn-primary" style="padding:12px 20px;font-size:0.68rem;">Record</button>
+        </form>
+    </div>
+</div>

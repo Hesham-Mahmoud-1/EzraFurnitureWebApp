@@ -1,0 +1,298 @@
+@model IEnumerable<Ezura.Core.DTOs.ProductDto>
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var featured = ViewBag.FeaturedProducts as IEnumerable<Ezura.Core.DTOs.ProductDto> ?? Enumerable.Empty<Ezura.Core.DTOs.ProductDto>();
+}
+
+<!-- ══ HERO ══════════════════════════════════════════════════════ -->
+<section class="hero">
+    <div class="hero-content">
+        <span class="hero-tagline">Cairo, Egypt · Est. 2024</span>
+        <h1>
+            Crafted for<br>
+            <em>Visionaries</em>
+        </h1>
+        <p>Premium handcrafted furniture for architects, engineers, and designers.
+           Every piece built by hand — precision engineering meets artisanal mastery.</p>
+        <div class="hero-ctas">
+            <a href="/products" class="btn-primary">
+                Explore Collection
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </a>
+            <a href="/custom-request" class="btn-secondary">Custom Order</a>
+        </div>
+        <div class="hero-scroll">
+            <span class="scroll-line"></span>
+            Scroll to explore
+        </div>
+    </div>
+    <div class="hero-media">
+        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1510 0%,#2a1f14 50%,#1a1510 100%);display:flex;align-items:center;justify-content:center;">
+            <div style="text-align:center;opacity:0.3;">
+                <div style="font-family:'Cormorant Garamond',serif;font-size:8rem;color:#C9A84C;line-height:1;">E</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══ STATS ═════════════════════════════════════════════════════ -->
+<div class="stats-strip animate-on-scroll">
+    <div class="stat-item">
+        <div class="stat-number">500<span style="color:var(--gold);font-size:2rem">+</span></div>
+        <div class="stat-label">Projects Completed</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">4<span style="color:var(--gold);font-size:2rem">+</span></div>
+        <div class="stat-label">Years of Mastery</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">100<span style="color:var(--gold);font-size:2rem">%</span></div>
+        <div class="stat-label">Custom Made</div>
+    </div>
+    <div class="stat-item">
+        <div class="stat-number">24<span style="color:var(--text-muted);font-size:1.5rem">/7</span></div>
+        <div class="stat-label">Client Support</div>
+    </div>
+</div>
+
+<!-- ══ FEATURED PRODUCTS ═════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header">
+        <span class="section-label">The Collection</span>
+        <h2>Featured Pieces</h2>
+        <p>Each product is designed and built by hand. No two pieces are identical — craftsmanship at its finest.</p>
+    </div>
+
+    @if (featured.Any())
+    {
+        <div class="product-grid">
+            @foreach (var product in featured)
+            {
+                <div class="product-card animate-on-scroll">
+                    <div class="product-card-media">
+                        @if (!string.IsNullOrEmpty(product.ThumbnailUrl))
+                        {
+                            <img src="@product.ThumbnailUrl" alt="@product.Name" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);display:flex;align-items:center;justify-content:center;">
+                                <span style="font-family:'Cormorant Garamond',serif;font-size:3rem;color:#C9A84C;opacity:0.4">E</span>
+                            </div>
+                        }
+                        @if (product.DiscountPrice.HasValue)
+                        {
+                            <div class="product-card-badge">Sale</div>
+                        }
+                        else if (product.IsFeatured)
+                        {
+                            <div class="product-card-badge">Featured</div>
+                        }
+                        <div class="product-card-actions">
+                            <button class="product-action-btn" data-wishlist="@product.Id" title="Add to Wishlist">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                </svg>
+                            </button>
+                            <a href="/products/@product.Slug" class="product-action-btn" title="Quick View">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="product-card-body">
+                        <div class="product-category">@product.CategoryName</div>
+                        <a href="/products/@product.Slug">
+                            <h3 class="product-name">@product.Name</h3>
+                        </a>
+                        <div class="product-price">
+                            <span class="price-current"
+                                  data-price-egp="@product.EffectivePrice">
+                                ج.م @product.EffectivePrice.ToString("N0")
+                            </span>
+                            @if (product.DiscountPrice.HasValue)
+                            {
+                                <span class="price-original"
+                                      data-price-egp="@product.Price">
+                                    ج.م @product.Price.ToString("N0")
+                                </span>
+                            }
+                        </div>
+                        <button class="product-add-btn"
+                                data-add-to-cart="@product.Id"
+                                data-label="Add to Cart">
+                            Add to Cart
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+        <div style="text-align:center;margin-top:48px;">
+            <a href="/products" class="btn-secondary">View All Pieces</a>
+        </div>
+    }
+    else
+    {
+        <div style="text-align:center;padding:80px 0;color:var(--text-muted);">
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;">Collection coming soon.</p>
+        </div>
+    }
+</div>
+
+<!-- ══ BRAND STORY ════════════════════════════════════════════════ -->
+<section style="background:var(--dark-2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="section" style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;">
+        <div class="animate-on-scroll">
+            <span class="section-label">Our Story</span>
+            <h2>Born from a Passion<br>for <em style="font-style:italic;color:var(--gold)">Precision</em></h2>
+            <p style="margin-bottom:24px;">
+                Founded by an architect who couldn't find furniture that met professional standards,
+                Ezura was born from the belief that your workspace should inspire greatness.
+            </p>
+            <p style="margin-bottom:40px;">
+                Every piece is designed with an engineer's precision and a craftsman's soul.
+                We use only premium materials — selected hardwoods, high-grade steel —
+                and build each piece to last a lifetime.
+            </p>
+            <a href="/home/about" class="btn-secondary">Our Story</a>
+        </div>
+        <div class="animate-on-scroll" style="aspect-ratio:1;background:linear-gradient(135deg,#1a1510,#2a2014);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+            <span style="font-family:'Cormorant Garamond',serif;font-size:12rem;color:var(--gold);opacity:0.15;line-height:1;">E</span>
+        </div>
+    </div>
+</section>
+
+<!-- ══ PORTFOLIO PREVIEW ══════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div>
+            <span class="section-label">Our Work</span>
+            <h2>Recent Projects</h2>
+        </div>
+        <a href="/portfolio" class="btn-secondary" style="flex-shrink:0;">View All</a>
+    </div>
+    <div class="portfolio-grid">
+        @for (int i = 0; i < 6; i++)
+        {
+            <div class="portfolio-card animate-on-scroll">
+                <div style="width:100%;height:100%;background:linear-gradient(@(i % 2 == 0 ? "135deg,#1a1510,#2a2014" : "135deg,#111,#1a1a1a"));display:flex;align-items:center;justify-content:center;">
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:4rem;color:#C9A84C;opacity:0.2">E</span>
+                </div>
+                <div class="portfolio-overlay">
+                    <div class="portfolio-info">
+                        <h4>Custom Project @(i + 1)</h4>
+                        <span>Drafting Table · Cairo</span>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ══ CUSTOM ORDER CTA ════════════════════════════════════════════ -->
+<section style="background:linear-gradient(135deg,#1a1510 0%,#111 50%,#1a1510 100%);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:100px 80px;text-align:center;">
+    <span class="section-label" style="display:block;text-align:center;">Bespoke Service</span>
+    <h2 style="margin-bottom:24px;">Have a Unique Vision?</h2>
+    <p style="max-width:540px;margin:0 auto 48px;font-size:1rem;">
+        We design and build fully custom furniture to your exact specifications.
+        Upload your sketches, share your measurements, and we'll bring your vision to life.
+    </p>
+    <a href="/custom-request" class="btn-primary">
+        Start Your Custom Order
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+    </a>
+</section>
+
+@{
+    var siteReviews = ViewBag.Reviews as IEnumerable<ReviewDto> ?? Enumerable.Empty<ReviewDto>();
+}
+
+<!-- ══ TESTIMONIALS ════════════════════════════════════════════════ -->
+<div class="section">
+    <div class="section-header centered">
+        <span class="section-label">Client Stories</span>
+        <h2>What Our Clients Say</h2>
+    </div>
+    <div class="testimonial-grid">
+        @if (siteReviews.Any())
+        {
+            @foreach (var r in siteReviews.Take(6))
+            {
+                <div class="testimonial-card animate-on-scroll">
+                    <div class="testimonial-stars">
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            <span class="star" style="color:@(i < r.Rating ? "var(--gold)" : "var(--dark-3)");">★</span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(r.Title))
+                    {
+                        <h4 style="margin-bottom:8px;">@r.Title</h4>
+                    }
+                    <p class="testimonial-text">"@r.Body"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div>
+                            <div class="author-name">@r.UserName</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">
+                    @for (int i = 0; i < 5; i++) { <span class="star">★</span> }
+                </div>
+                <p class="testimonial-text">"The drafting table I ordered from Ezura completely transformed my studio. The craftsmanship is extraordinary — every detail speaks of quality."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div>
+                        <div class="author-name">Ahmed Hassan</div>
+                        <div class="author-title">Senior Architect</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">
+                    @for (int i = 0; i < 5; i++) { <span class="star">★</span> }
+                </div>
+                <p class="testimonial-text">"I've ordered three pieces from Ezura now and each one exceeds expectations. The custom desk they built fits my space perfectly."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div>
+                        <div class="author-name">Sara Ibrahim</div>
+                        <div class="author-title">Interior Designer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card animate-on-scroll">
+                <div class="testimonial-stars">
+                    @for (int i = 0; i < 5; i++) { <span class="star">★</span> }
+                </div>
+                <p class="testimonial-text">"Professional grade workstation, delivered on time and exactly as specified. The quality justifies every penny."</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar"></div>
+                    <div>
+                        <div class="author-name">Mohamed Kamal</div>
+                        <div class="author-title">Civil Engineer</div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+  .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+  .hero-media { background: linear-gradient(135deg, #1a1510, #2a1f14); }
+</style>

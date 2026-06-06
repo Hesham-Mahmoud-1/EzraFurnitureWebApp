@@ -1,0 +1,63 @@
+@model Ezura.Core.Entities.PortfolioProject
+@{
+    ViewData["Title"] = Model.Title;
+}
+
+<section class="section" style="padding-top:160px;">
+    <div style="max-width:900px;margin:0 auto;">
+        <span class="section-label">Portfolio</span>
+        <h2 style="margin-bottom:24px;">@Model.Title</h2>
+
+        @if (!string.IsNullOrEmpty(Model.Description))
+        {
+            <p style="font-size:1.05rem;margin-bottom:40px;white-space:pre-line;">@Model.Description</p>
+        }
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:48px;">
+            <div style="aspect-ratio:4/3;background:var(--dark-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                @if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+                {
+                    <img src="@Model.ThumbnailUrl" alt="@Model.Title" style="width:100%;height:100%;object-fit:cover;" />
+                }
+                else
+                {
+                    <span style="font-family:'Cormorant Garamond',serif;font-size:6rem;color:var(--gold);opacity:0.2;">E</span>
+                }
+            </div>
+            <div style="padding:40px;display:flex;flex-direction:column;justify-content:center;background:var(--dark-2);border:1px solid var(--border);">
+                @if (!string.IsNullOrEmpty(Model.ClientName))
+                {
+                    <div style="margin-bottom:20px;">
+                        <div class="form-label">Client</div>
+                        <p style="font-size:0.95rem;color:var(--cream);">@Model.ClientName</p>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Category))
+                {
+                    <div style="margin-bottom:20px;">
+                        <div class="form-label">Category</div>
+                        <p style="font-size:0.95rem;color:var(--cream);">@Model.Category</p>
+                    </div>
+                }
+                @if (!string.IsNullOrEmpty(Model.Location))
+                {
+                    <div style="margin-bottom:20px;">
+                        <div class="form-label">Location</div>
+                        <p style="font-size:0.95rem;color:var(--cream);">@Model.Location</p>
+                    </div>
+                }
+                @if (Model.CompletionDate.HasValue)
+                {
+                    <div style="margin-bottom:20px;">
+                        <div class="form-label">Completed</div>
+                        <p style="font-size:0.95rem;color:var(--cream);">@Model.CompletionDate.Value.ToString("MMMM yyyy")</p>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div style="text-align:center;">
+            <a href="/portfolio" class="btn-secondary">Back to Portfolio</a>
+        </div>
+    </div>
+</section>

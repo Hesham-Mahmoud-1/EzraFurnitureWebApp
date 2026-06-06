@@ -1,0 +1,17 @@
+@{
+    ViewData["Title"] = "Error";
+    var statusCode = ViewBag.StatusCode ?? 500;
+}
+
+<section class="section" style="padding-top:160px;text-align:center;">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:8rem;color:var(--gold);opacity:0.3;line-height:1;margin-bottom:24px;">@statusCode</div>
+    <h2 style="margin-bottom:16px;">Something Went Wrong</h2>
+    <p style="max-width:480px;margin:0 auto 48px;">
+        We encountered an unexpected error. Our team has been notified.
+        Please try again or contact us if the problem persists.
+    </p>
+    <div style="display:flex;gap:16px;justify-content:center;">
+        <a href="/" class="btn-primary">Return Home</a>
+        <a href="/home/contact" class="btn-secondary">Contact Support</a>
+    </div>
+</section>

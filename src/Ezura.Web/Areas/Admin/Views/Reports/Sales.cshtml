@@ -1,0 +1,90 @@
+@model SalesReportDto
+@{
+    ViewData["Title"] = "Sales Report";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/admin/reports" style="color:var(--text-muted);font-size:0.82rem;">← Reports</a>
+        <div class="admin-page-title">Sales Report</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a href="/admin/reports/exportsales?format=excel&from=@Model.FromDate.ToString("yyyy-MM-dd")&to=@Model.ToDate.ToString("yyyy-MM-dd")" class="btn-primary" style="padding:8px 16px;font-size:0.62rem;">Export Excel</a>
+        <a href="/admin/reports/exportsales?format=pdf&from=@Model.FromDate.ToString("yyyy-MM-dd")&to=@Model.ToDate.ToString("yyyy-MM-dd")" class="btn-secondary" style="padding:8px 16px;font-size:0.62rem;">Export PDF</a>
+    </div>
+</div>
+
+<div style="background:var(--dark-2);border:1px solid var(--border);padding:20px 24px;margin-bottom:24px;">
+    <form method="get" style="display:flex;gap:16px;align-items:flex-end;">
+        <div>
+            <label class="form-label">From</label>
+            <input class="form-control" name="from" type="date" value="@Model.FromDate.ToString("yyyy-MM-dd")" />
+        </div>
+        <div>
+            <label class="form-label">To</label>
+            <input class="form-control" name="to" type="date" value="@Model.ToDate.ToString("yyyy-MM-dd")" />
+        </div>
+        <button type="submit" class="btn-primary" style="padding:12px 24px;font-size:0.68rem;">Update</button>
+    </form>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px;">
+    <div class="kpi-card">
+        <div class="kpi-label">Orders Created</div>
+        <div class="kpi-value">@Model.TotalOrdersCreated</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Orders Completed</div>
+        <div class="kpi-value">@Model.TotalOrdersCompleted</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Orders Cancelled</div>
+        <div class="kpi-value">@Model.TotalOrdersCancelled</div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+    <div>
+        <div class="admin-page-title" style="font-size:1.1rem;margin-bottom:16px;">Top Products</div>
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead><tr><th>Product</th><th>Sold</th></tr></thead>
+                <tbody>
+                    @if (Model.TopProducts.Any())
+                    {
+                        @foreach (var p in Model.TopProducts)
+                        {
+                            <tr><td style="color:var(--cream);">@p.Name</td><td>@p.TotalSold</td></tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="2" style="text-align:center;padding:40px;color:var(--text-muted);">No product data</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div>
+        <div class="admin-page-title" style="font-size:1.1rem;margin-bottom:16px;">Top Customers</div>
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead><tr><th>Customer</th><th>Orders</th><th>Spent</th></tr></thead>
+                <tbody>
+                    @if (Model.TopCustomers.Any())
+                    {
+                        @foreach (var c in Model.TopCustomers)
+                        {
+                            <tr><td style="color:var(--cream);">@c.Name</td><td>@c.TotalOrders</td><td style="color:var(--gold);">ج.م @c.TotalSpent.ToString("N0")</td></tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr><td colspan="3" style="text-align:center;padding:40px;color:var(--text-muted);">No customer data</td></tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

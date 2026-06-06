@@ -1,0 +1,125 @@
+@model PagedResult<ProductDto>
+@using Ezura.Core.Enums
+@{
+    ViewData["Title"] = "Collection";
+    var categoryId = Context.Request.Query["categoryId"].FirstOrDefault();
+}
+
+<section class="section" style="padding-top:160px;">
+    <div class="section-header" style="display:flex;justify-content:space-between;align-items:flex-end;">
+        <div>
+            <span class="section-label">The Collection</span>
+            <h2>All Pieces</h2>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+            <form method="get" style="display:flex;gap:12px;align-items:center;">
+                <select class="form-select" name="sortBy" style="width:160px;padding:10px 16px;font-size:0.7rem;" onchange="this.form.submit()">
+                    <option value="">Sort by</option>
+                    <option value="price_asc" selected="@(Context.Request.Query["sortBy"] == "price_asc")">Price: Low to High</option>
+                    <option value="price_desc" selected="@(Context.Request.Query["sortBy"] == "price_desc")">Price: High to Low</option>
+                    <option value="name_asc" selected="@(Context.Request.Query["sortBy"] == "name_asc")">Name: A-Z</option>
+                    <option value="newest" selected="@(Context.Request.Query["sortBy"] == "newest")">Newest First</option>
+                </select>
+            </form>
+        </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:220px 1fr;gap:48px;">
+        <div>
+            <div style="margin-bottom:32px;">
+                <div class="form-label" style="margin-bottom:12px;">Categories</div>
+                <ul style="list-style:none;">
+                    <li style="margin-bottom:8px;">
+                        <a href="/products" style="font-size:0.85rem;color:@(string.IsNullOrEmpty(categoryId) ? "var(--gold)" : "var(--text-muted)");">All</a>
+                    </li>
+                    <li style="margin-bottom:8px;">
+                        <a href="?categoryId=1" style="font-size:0.85rem;color:@(categoryId == "1" ? "var(--gold)" : "var(--text-muted)");">Drafting Tables</a>
+                    </li>
+                    <li style="margin-bottom:8px;">
+                        <a href="?categoryId=2" style="font-size:0.85rem;color:@(categoryId == "2" ? "var(--gold)" : "var(--text-muted)");">Office Desks</a>
+                    </li>
+                    <li style="margin-bottom:8px;">
+                        <a href="?categoryId=3" style="font-size:0.85rem;color:@(categoryId == "3" ? "var(--gold)" : "var(--text-muted)");">Workstations</a>
+                    </li>
+                    <li style="margin-bottom:8px;">
+                        <a href="?categoryId=4" style="font-size:0.85rem;color:@(categoryId == "4" ? "var(--gold)" : "var(--text-muted)");">Designer Pieces</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            @if (Model.Items.Any())
+            {
+                <div class="product-grid">
+                    @foreach (var product in Model.Items)
+                    {
+                        <div class="product-card">
+                            <div class="product-card-media">
+                                @if (!string.IsNullOrEmpty(product.ThumbnailUrl))
+                                {
+                                    <img src="@product.ThumbnailUrl" alt="@product.Name" loading="lazy" />
+                                }
+                                else
+                                {
+                                    <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);display:flex;align-items:center;justify-content:center;">
+                                        <span style="font-family:'Cormorant Garamond',serif;font-size:3rem;color:#C9A84C;opacity:0.4">E</span>
+                                    </div>
+                                }
+                                @if (product.DiscountPrice.HasValue)
+                                {
+                                    <div class="product-card-badge">Sale</div>
+                                }
+                                <div class="product-card-actions">
+                                    <button class="product-action-btn" data-wishlist="@product.Id" title="Add to Wishlist">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                    </button>
+                                    <a href="/products/@product.Slug" class="product-action-btn" title="Quick View">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-card-body">
+                                <div class="product-category">@product.CategoryName</div>
+                                <a href="/products/@product.Slug"><h3 class="product-name">@product.Name</h3></a>
+                                <div class="product-price">
+                                    <span class="price-current" data-price-egp="@product.EffectivePrice">ج.م @product.EffectivePrice.ToString("N0")</span>
+                                    @if (product.DiscountPrice.HasValue)
+                                    {
+                                        <span class="price-original" data-price-egp="@product.Price">ج.م @product.Price.ToString("N0")</span>
+                                    }
+                                </div>
+                                <button class="product-add-btn" data-add-to-cart="@product.Id">Add to Cart</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                if (Model.TotalPages > 1)
+                {
+                    <div class="pagination">
+                        @if (Model.HasPreviousPage)
+                        {
+                            <a href="?page=@(Model.Page - 1)" class="page-link">‹</a>
+                        }
+                        @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+                        {
+                            <a href="?page=@i" class="page-link @(i == Model.Page ? "active" : "")">@i</a>
+                        }
+                        @if (Model.HasNextPage)
+                        {
+                            <a href="?page=@(Model.Page + 1)" class="page-link">›</a>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div style="text-align:center;padding:120px 0;color:var(--text-muted);">
+                    <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px;">No products found</div>
+                    <p style="font-size:0.9rem;">Try adjusting your filters or check back later for new arrivals.</p>
+                </div>
+            }
+        </div>
+    </div>
+</section>

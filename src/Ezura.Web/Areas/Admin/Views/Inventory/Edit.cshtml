@@ -1,0 +1,61 @@
+@model InventoryItemDto
+@using Ezura.Core.Enums
+@{
+    ViewData["Title"] = $"Edit {Model.Name}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/admin/inventory" style="color:var(--text-muted);font-size:0.82rem;">← Inventory</a>
+        <div class="admin-page-title">Edit: @Model.Name</div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="max-width:600px;">
+        <h4 style="margin-bottom:24px;">Item Details</h4>
+        <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div><div class="kpi-label">Name</div><p style="color:var(--cream);">@Model.Name</p></div>
+                <div><div class="kpi-label">Category</div><p style="color:var(--cream);">@Model.CategoryName</p></div>
+                <div><div class="kpi-label">Current Stock</div><p style="color:var(--cream);font-weight:600;">@Model.CurrentStock.ToString("N0") @Model.Unit</p></div>
+                <div><div class="kpi-label">Minimum Stock</div><p style="color:var(--cream);">@Model.MinimumStock.ToString("N0") @Model.Unit</p></div>
+                @if (Model.UnitCost.HasValue)
+                {
+                    <div><div class="kpi-label">Unit Cost</div><p style="color:var(--gold);">ج.م @Model.UnitCost.Value.ToString("N2")</p></div>
+                }
+                <div><div class="kpi-label">Status</div><span class="badge @(Model.IsActive ? "badge-completed" : "badge-cancelled")">@(Model.IsActive ? "Active" : "Inactive")</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width:600px;">
+        <h4 style="margin-bottom:24px;">Record Movement</h4>
+        <form method="post" action="/admin/inventory/@Model.Id/recordmovement">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label class="form-label">Type</label>
+                <select class="form-select" name="type" required>
+                    @foreach (MovementType t in Enum.GetValues<MovementType>())
+                    {
+                        <option value="@((int)t)">@t</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Quantity</label>
+                <input class="form-control" name="quantity" type="number" step="0.01" required />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Reference</label>
+                <input class="form-control" name="reference" placeholder="PO #, invoice #..." />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <input class="form-control" name="notes" />
+            </div>
+            <button type="submit" class="btn-primary">Record Movement</button>
+        </form>
+    </div>
+</div>

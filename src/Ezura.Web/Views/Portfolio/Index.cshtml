@@ -1,0 +1,53 @@
+@model IEnumerable<Ezura.Core.Entities.PortfolioProject>
+@{
+    ViewData["Title"] = "Portfolio";
+}
+
+<section class="section" style="padding-top:160px;">
+    <div class="section-header centered">
+        <span class="section-label">Our Work</span>
+        <h2>Recent Projects</h2>
+        <p>A selection of our custom furniture projects — each piece tells a story of collaboration and craftsmanship.</p>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="portfolio-grid">
+            @foreach (var project in Model)
+            {
+                <div class="portfolio-card">
+                    @if (!string.IsNullOrEmpty(project.ThumbnailUrl))
+                    {
+                        <img src="@project.ThumbnailUrl" alt="@project.Title" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a1510,#2a2014);display:flex;align-items:center;justify-content:center;">
+                            <span style="font-family:'Cormorant Garamond',serif;font-size:4rem;color:#C9A84C;opacity:0.2">E</span>
+                        </div>
+                    }
+                    <a href="/portfolio/@project.Slug" class="portfolio-overlay" style="text-decoration:none;">
+                        <div class="portfolio-info">
+                            <h4>@project.Title</h4>
+                            @if (!string.IsNullOrEmpty(project.Location))
+                            {
+                                <span>@project.Category · @project.Location</span>
+                            }
+                            else
+                            {
+                                <span>@project.Category</span>
+                            }
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div style="text-align:center;padding:120px 0;color:var(--text-muted);">
+            <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;margin-bottom:8px;">Projects coming soon</div>
+            <p style="font-size:0.9rem;">We're building our portfolio. Check back soon to see our latest work.</p>
+        </div>
+    }
+</section>

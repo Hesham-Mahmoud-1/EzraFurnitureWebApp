@@ -1,0 +1,71 @@
+@model PagedResult<CustomRequestDto>
+@using Ezura.Core.Enums
+@{
+    ViewData["Title"] = "Custom Requests";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var currentStatus = ViewBag.CurrentStatus as CustomRequestStatus?;
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Custom Requests</div>
+</div>
+
+<div style="display:flex;gap:2px;margin-bottom:16px;overflow-x:auto;">
+    <a href="/admin/customrequests" class="@(currentStatus == null ? "btn-primary" : "btn-secondary")" style="padding:8px 16px;font-size:0.65rem;white-space:nowrap;">All</a>
+    @foreach (CustomRequestStatus s in Enum.GetValues<CustomRequestStatus>())
+    {
+        <a href="/admin/customrequests?status=@((int)s)" class="@(currentStatus == s ? "btn-primary" : "btn-secondary")" style="padding:8px 16px;font-size:0.65rem;white-space:nowrap;">@s</a>
+    }
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Furniture Type</th>
+                <th>Budget</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Any())
+            {
+                @foreach (var req in Model.Items)
+                {
+                    <tr>
+                        <td style="color:var(--gold);font-weight:600;">#@req.Id</td>
+                        <td>
+                            <div style="color:var(--cream);font-weight:500;">@req.CustomerName</div>
+                            <div style="font-size:0.72rem;color:var(--text-muted);">@req.CustomerEmail</div>
+                        </td>
+                        <td>@req.FurnitureType</td>
+                        <td>@req.BudgetRange</td>
+                        <td><span class="badge badge-pending">@req.StatusName</span></td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">@req.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td><a href="/admin/customrequests/@req.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">View</a></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="7" style="text-align:center;padding:60px;color:var(--text-muted);">No custom requests</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination">
+        @if (Model.HasPreviousPage) { <a href="?page=@(Model.Page - 1)" class="page-link">‹</a> }
+        @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+        {
+            <a href="?page=@i" class="page-link @(i == Model.Page ? "active" : "")">@i</a>
+        }
+        @if (Model.HasNextPage) { <a href="?page=@(Model.Page + 1)" class="page-link">›</a> }
+    </div>
+}

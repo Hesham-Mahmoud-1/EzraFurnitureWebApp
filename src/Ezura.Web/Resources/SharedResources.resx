@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Collection" xml:space="preserve"><value>Collection</value></data>
+  <data name="Portfolio" xml:space="preserve"><value>Portfolio</value></data>
+  <data name="CustomOrder" xml:space="preserve"><value>Custom Order</value></data>
+  <data name="About" xml:space="preserve"><value>About</value></data>
+  <data name="Contact" xml:space="preserve"><value>Contact</value></data>
+  <data name="ChangeCurrency" xml:space="preserve"><value>Change Currency</value></data>
+  <data name="Search" xml:space="preserve"><value>Search</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>Search furniture...</value></data>
+  <data name="Wishlist" xml:space="preserve"><value>Wishlist</value></data>
+  <data name="Cart" xml:space="preserve"><value>Cart</value></data>
+  <data name="SignIn" xml:space="preserve"><value>Sign In</value></data>
+  <data name="SignOut" xml:space="preserve"><value>Sign Out</value></data>
+  <data name="MyProfile" xml:space="preserve"><value>My Profile</value></data>
+  <data name="MyOrders" xml:space="preserve"><value>My Orders</value></data>
+  <data name="AdminPanel" xml:space="preserve"><value>Admin Panel</value></data>
+  <data name="Menu" xml:space="preserve"><value>Menu</value></data>
+  <data name="FooterDescription" xml:space="preserve"><value>Handcrafted premium furniture for professionals and connoisseurs. Made in Cairo, Egypt.</value></data>
+  <data name="CollectionHeading" xml:space="preserve"><value>Collection</value></data>
+  <data name="DraftingTables" xml:space="preserve"><value>Drafting Tables</value></data>
+  <data name="OfficeDesks" xml:space="preserve"><value>Office Desks</value></data>
+  <data name="Workstations" xml:space="preserve"><value>Workstations</value></data>
+  <data name="DesignerPieces" xml:space="preserve"><value>Designer Pieces</value></data>
+  <data name="CustomOrders" xml:space="preserve"><value>Custom Orders</value></data>
+  <data name="Company" xml:space="preserve"><value>Company</value></data>
+  <data name="AboutEzura" xml:space="preserve"><value>About Ezura</value></data>
+  <data name="PortfolioLink" xml:space="preserve"><value>Portfolio</value></data>
+  <data name="ContactLink" xml:space="preserve"><value>Contact</value></data>
+  <data name="Careers" xml:space="preserve"><value>Careers</value></data>
+  <data name="Support" xml:space="preserve"><value>Support</value></data>
+  <data name="TrackOrder" xml:space="preserve"><value>Track Order</value></data>
+  <data name="ShippingPolicy" xml:space="preserve"><value>Shipping Policy</value></data>
+  <data name="CareGuide" xml:space="preserve"><value>Care Guide</value></data>
+  <data name="FAQ" xml:space="preserve"><value>FAQ</value></data>
+  <data name="Copyright" xml:space="preserve"><value>Ezura Furniture Co. · Cairo, Egypt · All rights reserved.</value></data>
+  <data name="PrivacyPolicy" xml:space="preserve"><value>Privacy Policy</value></data>
+  <data name="TermsOfService" xml:space="preserve"><value>Terms of Service</value></data>
+  <data name="Language" xml:space="preserve"><value>Language</value></data>
+  <data name="English" xml:space="preserve"><value>English</value></data>
+  <data name="Arabic" xml:space="preserve"><value>العربية</value></data>
+</root>

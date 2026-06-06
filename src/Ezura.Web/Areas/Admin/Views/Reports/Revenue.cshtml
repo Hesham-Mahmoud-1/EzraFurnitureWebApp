@@ -1,0 +1,102 @@
+@model RevenueReportDto
+@{
+    ViewData["Title"] = "Revenue Report";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/admin/reports" style="color:var(--text-muted);font-size:0.82rem;">← Reports</a>
+        <div class="admin-page-title">Revenue Report</div>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <a href="/admin/reports/exportrevenue?format=excel&from=@Model.FromDate.ToString("yyyy-MM-dd")&to=@Model.ToDate.ToString("yyyy-MM-dd")" class="btn-secondary" style="font-size:0.68rem;padding:10px 20px;">Excel</a>
+        <a href="/admin/reports/exportrevenue?format=pdf&from=@Model.FromDate.ToString("yyyy-MM-dd")&to=@Model.ToDate.ToString("yyyy-MM-dd")" class="btn-secondary" style="font-size:0.68rem;padding:10px 20px;">PDF</a>
+    </div>
+</div>
+
+<div style="margin-bottom:24px;">
+    <form method="get" style="display:flex;gap:16px;align-items:flex-end;">
+        <div>
+            <label class="form-label">From</label>
+            <input class="form-control" type="date" name="from" value="@Model.FromDate.ToString("yyyy-MM-dd")" style="width:180px;" />
+        </div>
+        <div>
+            <label class="form-label">To</label>
+            <input class="form-control" type="date" name="to" value="@Model.ToDate.ToString("yyyy-MM-dd")" style="width:180px;" />
+        </div>
+        <button type="submit" class="btn-primary" style="padding:12px 24px;font-size:0.68rem;">Update</button>
+    </form>
+</div>
+
+<div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Revenue</div><div class="kpi-value" data-price-egp="@Model.TotalRevenue">ج.م @Model.TotalRevenue.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Deposits Collected</div><div class="kpi-value" style="color:#4CAF82;" data-price-egp="@Model.TotalDeposits">ج.م @Model.TotalDeposits.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Outstanding</div><div class="kpi-value" style="color:#CF6679;" data-price-egp="@Model.TotalOutstanding">ج.م @Model.TotalOutstanding.ToString("N0")</div></div>
+    <div class="kpi-card"><div class="kpi-label">Avg Order Value</div><div class="kpi-value" data-price-egp="@Model.AverageOrderValue">ج.م @Model.AverageOrderValue.ToString("N0")</div></div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div class="kpi-card">
+        <div class="kpi-label">Total Orders</div>
+        <div class="kpi-value">@Model.TotalOrders</div>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Period</div>
+        <div style="color:var(--cream);font-size:0.9rem;">@Model.FromDate.ToString("dd MMM yyyy") — @Model.ToDate.ToString("dd MMM yyyy")</div>
+    </div>
+</div>
+
+<div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;margin-bottom:24px;">
+    <div class="kpi-label" style="margin-bottom:16px;">Daily Revenue</div>
+    <canvas id="dailyChart" height="200"></canvas>
+</div>
+
+@if (Model.DailyRevenue.Any())
+{
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead><tr><th>Date</th><th>Revenue</th></tr></thead>
+            <tbody>
+                @foreach (var point in Model.DailyRevenue)
+                {
+                    <tr>
+                        <td style="color:var(--cream);">@point.Label</td>
+                        <td style="color:var(--gold);">ج.م @point.Revenue.ToString("N0")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        const dailyData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            Model.DailyRevenue?.Select(d => new { label = d.Label, value = (double)d.Revenue }) ?? Enumerable.Empty<object>()));
+        if (dailyData.length > 0) {
+            new Chart(document.getElementById('dailyChart'), {
+                type: 'bar',
+                data: {
+                    labels: dailyData.map(d => d.label),
+                    datasets: [{
+                        label: 'Revenue',
+                        data: dailyData.map(d => d.value),
+                        backgroundColor: 'rgba(201,168,76,0.6)',
+                        borderColor: '#C9A84C',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: 'rgba(139,115,85,0.1)' } },
+                        y: { grid: { color: 'rgba(139,115,85,0.1)' }, ticks: { callback: v => 'ج.م ' + v.toLocaleString() } }
+                    }
+                }
+            });
+        }
+    </script>
+}

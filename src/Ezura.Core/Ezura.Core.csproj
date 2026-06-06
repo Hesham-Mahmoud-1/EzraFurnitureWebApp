@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Ezura.Core</RootNamespace>
+    <AssemblyName>Ezura.Core</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Required for ApplicationUser : IdentityUser on .NET 8 -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.11" />
+  </ItemGroup>
+</Project>

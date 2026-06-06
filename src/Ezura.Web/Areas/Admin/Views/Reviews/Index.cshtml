@@ -1,0 +1,87 @@
+@model IEnumerable<ReviewDto>
+@{
+    ViewData["Title"] = "Reviews";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var isPending = Context.Request.Path.StartsWithSegments("/admin/reviews/pending");
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">@(isPending ? "Pending Reviews" : "All Reviews")</div>
+    <div style="display:flex;gap:8px;">
+        <a href="/admin/reviews" class="btn-secondary" style="padding:8px 16px;font-size:0.62rem;">All</a>
+        <a href="/admin/reviews/pending" class="btn-primary" style="padding:8px 16px;font-size:0.62rem;">Pending</a>
+    </div>
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>User</th>
+                <th>Rating</th>
+                <th>Title</th>
+                <th>Submitted</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var review in Model)
+                {
+                    <tr>
+                        <td style="color:var(--cream);font-size:0.85rem;">@review.ProductName</td>
+                        <td style="color:var(--text-muted);font-size:0.8rem;">@review.UserName</td>
+                        <td>
+                            <span style="color:var(--gold);">
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    <span>@(i < review.Rating ? "★" : "☆")</span>
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <div style="color:var(--cream);font-weight:500;">@(review.Title ?? "—")</div>
+                            @if (!string.IsNullOrEmpty(review.Body))
+                            {
+                                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;">@review.Body</div>
+                            }
+                        </td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">@review.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <span class="badge @(review.IsApproved ? "badge-completed" : "badge-pending")">
+                                @(review.IsApproved ? "Approved" : "Pending")
+                            </span>
+                        </td>
+                        <td>
+                            @if (!review.IsApproved)
+                            {
+                                <form method="post" action="/admin/reviews/approve/@review.Id" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-primary" style="padding:4px 10px;font-size:0.6rem;">Approve</button>
+                                </form>
+                                <form method="post" action="/admin/reviews/reject/@review.Id" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-secondary" style="padding:4px 10px;font-size:0.6rem;">Reject</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <form method="post" action="/admin/reviews/delete/@review.Id" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-secondary" style="padding:4px 10px;font-size:0.6rem;">Delete</button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="7" style="text-align:center;padding:60px;color:var(--text-muted);">No reviews found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,38 @@
+@model Category
+@{
+    ViewData["Title"] = "New Category";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <a href="/admin/categories" style="font-size:0.68rem;color:var(--gold);margin-bottom:8px;display:inline-block;">← Back to Categories</a>
+    <div class="admin-page-title">New Category</div>
+</div>
+
+<div style="max-width:600px;background:var(--dark-2);border:1px solid var(--border);padding:32px;">
+    <form method="post">
+        @Html.AntiForgeryToken()
+        <div style="margin-bottom:20px;">
+            <label class="form-label">Name</label>
+            <input class="form-control" asp-for="Name" required />
+            <span asp-validation-for="Name" style="color:#CF6679;font-size:0.72rem;"></span>
+        </div>
+        <div style="margin-bottom:20px;">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" asp-for="Description" rows="3" style="resize:vertical;"></textarea>
+        </div>
+        <div style="margin-bottom:20px;">
+            <label class="form-label">Image URL</label>
+            <input class="form-control" asp-for="ImageUrl" />
+        </div>
+        <div style="margin-bottom:20px;">
+            <label class="form-label">Sort Order</label>
+            <input class="form-control" asp-for="SortOrder" type="number" value="0" />
+        </div>
+        <div style="margin-bottom:20px;display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" asp-for="IsActive" checked />
+            <label style="font-size:0.78rem;color:var(--text);">Active</label>
+        </div>
+        <button type="submit" class="btn-primary" style="padding:12px 32px;font-size:0.68rem;">Create Category</button>
+    </form>
+</div>

@@ -1,0 +1,76 @@
+@model IEnumerable<InventoryItemDto>
+@{
+    ViewData["Title"] = "Inventory";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var lowStock = ViewBag.LowStock as IEnumerable<InventoryItemDto> ?? Enumerable.Empty<InventoryItemDto>();
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Inventory</div>
+    <a href="/admin/inventory/create" class="btn-primary" style="font-size:0.68rem;padding:10px 20px;">+ New Item</a>
+</div>
+
+@if (lowStock.Any())
+{
+    <div style="background:rgba(207,102,121,0.08);border:1px solid rgba(207,102,121,0.3);padding:16px 20px;margin-bottom:20px;">
+        <div style="color:#CF6679;font-size:0.72rem;letter-spacing:0.15em;text-transform:uppercase;font-weight:600;">
+            ⚠ @lowStock.Count() low stock items
+        </div>
+    </div>
+}
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Min Stock</th>
+                <th>Unit</th>
+                <th>Unit Cost</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="color:var(--cream);font-weight:500;">@item.Name</td>
+                        <td style="font-size:0.78rem;">@item.CategoryName</td>
+                        <td>
+                            <span style="font-weight:600;color:@(item.IsLowStock ? "#CF6679" : "#4CAF82");">@item.CurrentStock.ToString("N0")</span>
+                        </td>
+                        <td>@item.MinimumStock.ToString("N0")</td>
+                        <td>@item.Unit</td>
+                        <td>
+                            @if (item.UnitCost.HasValue)
+                            {
+                                <span style="color:var(--gold);">ج.م @item.UnitCost.Value.ToString("N2")</span>
+                            }
+                            else
+                            {
+                                <span style="color:var(--text-muted);">—</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge @(item.IsActive ? "badge-completed" : "badge-cancelled")">
+                                @(item.IsActive ? "Active" : "Inactive")
+                            </span>
+                        </td>
+                        <td>
+                            <a href="/admin/inventory/edit/@item.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">Edit</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="8" style="text-align:center;padding:60px;color:var(--text-muted);">No inventory items</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

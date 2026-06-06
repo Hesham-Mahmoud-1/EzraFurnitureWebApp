@@ -1,0 +1,56 @@
+@model RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account";
+}
+
+<section class="section" style="padding-top:160px;">
+    <div style="max-width:480px;margin:0 auto;">
+        <div style="text-align:center;margin-bottom:48px;">
+            <span class="section-label" style="display:block;text-align:center;">Join Ezura</span>
+            <h2>Create Account</h2>
+        </div>
+
+        <form method="post" action="/account/register">
+            @Html.AntiForgeryToken()
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div style="background:rgba(207,102,121,0.08);border:1px solid rgba(207,102,121,0.3);padding:16px 20px;margin-bottom:24px;">
+                    <div asp-validation-summary="All" style="font-size:0.82rem;color:#CF6679;"></div>
+                </div>
+            }
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input class="form-control" asp-for="FirstName" required placeholder="John" />
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input class="form-control" asp-for="LastName" required placeholder="Doe" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input class="form-control" asp-for="Email" required type="email" placeholder="john@example.com" autocomplete="email" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input class="form-control" asp-for="Phone" required placeholder="+20 10 XXXXXXXX" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input class="form-control" asp-for="Password" required type="password" placeholder="At least 8 characters" autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input class="form-control" asp-for="ConfirmPassword" required type="password" placeholder="Repeat password" />
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%;justify-content:center;">Create Account</button>
+        </form>
+
+        <div style="text-align:center;margin-top:32px;">
+            <p style="font-size:0.85rem;">Already have an account? <a href="/account/login" style="color:var(--gold);">Sign in</a></p>
+        </div>
+    </div>
+</section>

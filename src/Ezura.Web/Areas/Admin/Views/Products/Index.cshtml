@@ -1,0 +1,105 @@
+@model PagedResult<ProductDto>
+@{
+    ViewData["Title"] = "Products";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Products</div>
+    <a href="/admin/products/create" class="btn-primary" style="font-size:0.68rem;padding:10px 20px;">+ New Product</a>
+</div>
+
+<div style="background:var(--dark-2);border:1px solid var(--border);padding:20px 24px;margin-bottom:20px;">
+    <form method="get" style="display:flex;gap:16px;align-items:flex-end;">
+        <div>
+            <label class="form-label">Search</label>
+            <input class="form-control" name="search" value="@ViewBag.Search" placeholder="Product name..." style="width:280px;" />
+        </div>
+        <button type="submit" class="btn-primary" style="padding:12px 24px;font-size:0.68rem;">Search</button>
+        <a href="/admin/products" class="btn-secondary" style="padding:12px 24px;font-size:0.68rem;">Clear</a>
+    </form>
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Featured</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Items.Any())
+            {
+                @foreach (var product in Model.Items)
+                {
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:44px;height:36px;background:var(--dark-3);display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                                    @if (!string.IsNullOrEmpty(product.ThumbnailUrl))
+                                    {
+                                        <img src="@product.ThumbnailUrl" alt="" style="width:100%;height:100%;object-fit:cover;" />
+                                    }
+                                    else
+                                    {
+                                        <span style="font-family:'Cormorant Garamond',serif;font-size:0.8rem;color:var(--gold);opacity:0.4;">E</span>
+                                    }
+                                </div>
+                                <div>
+                                    <div style="color:var(--cream);font-weight:500;">@product.Name</div>
+                                    <div style="font-size:0.72rem;color:var(--text-muted);">/products/@product.Slug</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-size:0.78rem;">@product.Sku</td>
+                        <td>@product.CategoryName</td>
+                        <td><span style="color:var(--gold);">ج.م @product.EffectivePrice.ToString("N0")</span></td>
+                        <td>
+                            <span style="color:@(product.StockQuantity <= 0 ? "#CF6679" : product.StockQuantity <= 3 ? "#FFC107" : "#4CAF82");">
+                                @product.StockQuantity
+                            </span>
+                        </td>
+                        <td>@(product.IsFeatured ? "★" : "—")</td>
+                        <td>
+                            <div style="display:flex;gap:6px;">
+                                <a href="/admin/products/edit/@product.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">Edit</a>
+                                <form method="post" action="/admin/products/delete/@product.Id" style="display:inline;" onsubmit="return confirm('Delete @product.Name?')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;color:#CF6679;border-color:rgba(207,102,121,0.3);">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="7" style="text-align:center;padding:60px;color:var(--text-muted);">No products yet. <a href="/admin/products/create" style="color:var(--gold);">Create one</a></td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (Model.TotalPages > 1)
+{
+    <div class="pagination">
+        @if (Model.HasPreviousPage)
+        {
+            <a href="?page=@(Model.Page - 1)" class="page-link">‹</a>
+        }
+        @for (int i = Math.Max(1, Model.Page - 2); i <= Math.Min(Model.TotalPages, Model.Page + 2); i++)
+        {
+            <a href="?page=@i" class="page-link @(i == Model.Page ? "active" : "")">@i</a>
+        }
+        @if (Model.HasNextPage)
+        {
+            <a href="?page=@(Model.Page + 1)" class="page-link">›</a>
+        }
+    </div>
+}

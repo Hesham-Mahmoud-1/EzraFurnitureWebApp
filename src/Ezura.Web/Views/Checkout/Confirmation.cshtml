@@ -1,0 +1,42 @@
+@model OrderDto
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<section class="section" style="padding-top:160px;text-align:center;">
+    <div style="max-width:600px;margin:0 auto;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:4rem;color:#4CAF82;margin-bottom:16px;">✓</div>
+        <span class="section-label" style="display:block;text-align:center;">Order Placed</span>
+        <h2 style="margin-bottom:16px;">Thank You for Your Order</h2>
+        <p style="margin-bottom:32px;">
+            Your order <strong style="color:var(--gold);">@Model.OrderNumber</strong> has been placed successfully.
+            We'll send you a confirmation email shortly.
+        </p>
+
+        <div style="background:var(--dark-2);border:1px solid var(--border);padding:32px;text-align:left;margin-bottom:32px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                <div>
+                    <div class="form-label">Order Number</div>
+                    <p style="color:var(--gold);font-weight:600;">@Model.OrderNumber</p>
+                </div>
+                <div>
+                    <div class="form-label">Status</div>
+                    <p style="color:var(--cream);">@Model.StatusName</p>
+                </div>
+                <div>
+                    <div class="form-label">Total Amount</div>
+                    <p style="color:var(--gold);font-weight:600;" data-price-egp="@Model.TotalAmount">ج.م @Model.TotalAmount.ToString("N0")</p>
+                </div>
+                <div>
+                    <div class="form-label">Deposit Required</div>
+                    <p style="color:#CF6679;" data-price-egp="@Model.DepositAmount">ج.م @Model.DepositAmount.ToString("N0")</p>
+                </div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:16px;justify-content:center;">
+            <a href="/" class="btn-primary">Return Home</a>
+            <a href="/account/orders" class="btn-secondary">View My Orders</a>
+        </div>
+    </div>
+</section>

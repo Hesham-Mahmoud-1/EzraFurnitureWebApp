@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Collection" xml:space="preserve"><value>المجموعة</value></data>
+  <data name="Portfolio" xml:space="preserve"><value>أعمالنا</value></data>
+  <data name="CustomOrder" xml:space="preserve"><value>طلب مخصص</value></data>
+  <data name="About" xml:space="preserve"><value>عن إيزورا</value></data>
+  <data name="Contact" xml:space="preserve"><value>اتصل بنا</value></data>
+  <data name="ChangeCurrency" xml:space="preserve"><value>تغيير العملة</value></data>
+  <data name="Search" xml:space="preserve"><value>بحث</value></data>
+  <data name="SearchPlaceholder" xml:space="preserve"><value>ابحث عن الأثاث...</value></data>
+  <data name="Wishlist" xml:space="preserve"><value>المفضلة</value></data>
+  <data name="Cart" xml:space="preserve"><value>السلة</value></data>
+  <data name="SignIn" xml:space="preserve"><value>تسجيل الدخول</value></data>
+  <data name="SignOut" xml:space="preserve"><value>تسجيل الخروج</value></data>
+  <data name="MyProfile" xml:space="preserve"><value>ملفي الشخصي</value></data>
+  <data name="MyOrders" xml:space="preserve"><value>طلباتي</value></data>
+  <data name="AdminPanel" xml:space="preserve"><value>لوحة التحكم</value></data>
+  <data name="Menu" xml:space="preserve"><value>القائمة</value></data>
+  <data name="FooterDescription" xml:space="preserve"><value>أثاث فاخر مصنوع يدوياً للمحترفين وعشاق الجمال. صنع في القاهرة، مصر.</value></data>
+  <data name="CollectionHeading" xml:space="preserve"><value>المجموعة</value></data>
+  <data name="DraftingTables" xml:space="preserve"><value>طاولات الرسم</value></data>
+  <data name="OfficeDesks" xml:space="preserve"><value>مكاتب العمل</value></data>
+  <data name="Workstations" xml:space="preserve"><value>محطات العمل</value></data>
+  <data name="DesignerPieces" xml:space="preserve"><value>قطع المصممين</value></data>
+  <data name="CustomOrders" xml:space="preserve"><value>الطلبات المخصصة</value></data>
+  <data name="Company" xml:space="preserve"><value>الشركة</value></data>
+  <data name="AboutEzura" xml:space="preserve"><value>عن إيزورا</value></data>
+  <data name="PortfolioLink" xml:space="preserve"><value>أعمالنا</value></data>
+  <data name="ContactLink" xml:space="preserve"><value>اتصل بنا</value></data>
+  <data name="Careers" xml:space="preserve"><value>وظائف</value></data>
+  <data name="Support" xml:space="preserve"><value>الدعم</value></data>
+  <data name="TrackOrder" xml:space="preserve"><value>تتبع الطلب</value></data>
+  <data name="ShippingPolicy" xml:space="preserve"><value>سياسة الشحن</value></data>
+  <data name="CareGuide" xml:space="preserve"><value>دليل العناية</value></data>
+  <data name="FAQ" xml:space="preserve"><value>الأسئلة الشائعة</value></data>
+  <data name="Copyright" xml:space="preserve"><value>شركة إيزورا للأثاث · القاهرة، مصر · جميع الحقوق محفوظة.</value></data>
+  <data name="PrivacyPolicy" xml:space="preserve"><value>سياسة الخصوصية</value></data>
+  <data name="TermsOfService" xml:space="preserve"><value>شروط الخدمة</value></data>
+  <data name="Language" xml:space="preserve"><value>اللغة</value></data>
+  <data name="English" xml:space="preserve"><value>English</value></data>
+  <data name="Arabic" xml:space="preserve"><value>العربية</value></data>
+</root>

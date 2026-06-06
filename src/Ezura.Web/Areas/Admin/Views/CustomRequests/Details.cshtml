@@ -1,0 +1,73 @@
+@model CustomRequestDto
+@using Ezura.Core.Enums
+@{
+    ViewData["Title"] = $"Custom Request #{Model.Id}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/admin/customrequests" style="color:var(--text-muted);font-size:0.82rem;">← Requests</a>
+        <div class="admin-page-title">Request #@Model.Id</div>
+        <span class="badge badge-pending">@Model.StatusName</span>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label">Customer</div>
+        <p style="color:var(--cream);font-weight:500;font-size:1.1rem;">@Model.CustomerName</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">@Model.CustomerEmail</p>
+        <p style="font-size:0.85rem;color:var(--text-muted);">@Model.CustomerPhone</p>
+    </div>
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label">Details</div>
+        <p style="font-size:0.9rem;"><span style="color:var(--text-muted);">Type:</span> <span style="color:var(--cream);">@Model.FurnitureType</span></p>
+        <p style="font-size:0.9rem;"><span style="color:var(--text-muted);">Budget:</span> <span style="color:var(--cream);">@Model.BudgetRange</span></p>
+        @if (Model.RequiredByDate.HasValue)
+        {
+            <p style="font-size:0.9rem;"><span style="color:var(--text-muted);">Required by:</span> <span style="color:var(--cream);">@Model.RequiredByDate.Value.ToString("dd MMM yyyy")</span></p>
+        }
+    </div>
+</div>
+
+<div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;margin-bottom:24px;">
+    <div class="kpi-label">Description</div>
+    <p style="font-size:0.9rem;color:var(--cream);white-space:pre-line;">@Model.Description</p>
+</div>
+
+@if (Model.ImageUrls.Any())
+{
+    <div style="display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;">
+        @foreach (var img in Model.ImageUrls)
+        {
+            <div style="width:120px;height:90px;background:var(--dark-3);border:1px solid var(--border);overflow:hidden;">
+                <img src="@img" alt="" style="width:100%;height:100%;object-fit:cover;" />
+            </div>
+        }
+    </div>
+}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label" style="margin-bottom:16px;">Update Status</div>
+        <form method="post" action="/admin/customrequests/@Model.Id/updatestatus" style="display:flex;gap:12px;">
+            @Html.AntiForgeryToken()
+            <select class="form-select" name="status" style="flex:1;">
+                @foreach (CustomRequestStatus s in Enum.GetValues<CustomRequestStatus>())
+                {
+                    <option value="@((int)s)" selected="@(Model.Status == s)">@s</option>
+                }
+            </select>
+            <button type="submit" class="btn-primary" style="padding:12px 20px;font-size:0.68rem;">Update</button>
+        </form>
+    </div>
+    <div style="background:var(--dark-2);border:1px solid var(--border);padding:28px;">
+        <div class="kpi-label" style="margin-bottom:16px;">Send Quote</div>
+        <form method="post" action="/admin/customrequests/@Model.Id/sendquote" style="display:flex;gap:12px;">
+            @Html.AntiForgeryToken()
+            <input class="form-control" name="quotedPrice" type="number" step="0.01" placeholder="Price" style="width:140px;" required />
+            <button type="submit" class="btn-primary" style="padding:12px 20px;font-size:0.68rem;">Send Quote</button>
+        </form>
+    </div>
+</div>

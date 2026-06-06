@@ -1,0 +1,86 @@
+@model Ezura.Core.Entities.ApplicationUser
+@{
+    ViewData["Title"] = $"{Model.FirstName} {Model.LastName}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var orders = ViewBag.Orders as IEnumerable<OrderDto> ?? Enumerable.Empty<OrderDto>();
+    var lifetimeValue = ViewBag.LifetimeValue as decimal? ?? 0;
+}
+
+<div class="admin-topbar">
+    <div style="display:flex;align-items:center;gap:16px;">
+        <a href="/admin/customers" style="color:var(--text-muted);font-size:0.82rem;">← Customers</a>
+        <div class="admin-page-title">@Model.FirstName @Model.LastName</div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div class="kpi-card">
+        <div class="kpi-label">Email</div>
+        <p style="color:var(--cream);font-size:0.9rem;">@Model.Email</p>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Phone</div>
+        <p style="color:var(--cream);font-size:0.9rem;">@Model.PhoneNumber</p>
+    </div>
+    <div class="kpi-card">
+        <div class="kpi-label">Lifetime Value</div>
+        <div class="kpi-value" style="font-size:1.4rem;">ج.م @lifetimeValue.ToString("N0")</div>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
+    <div class="kpi-card" style="grid-column:span 2;">
+        <div class="kpi-label" style="margin-bottom:16px;">Profile Information</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">First Name</span><p style="color:var(--cream);font-size:0.85rem;">@Model.FirstName</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Last Name</span><p style="color:var(--cream);font-size:0.85rem;">@Model.LastName</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Email</span><p style="color:var(--cream);font-size:0.85rem;">@Model.Email</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Phone</span><p style="color:var(--cream);font-size:0.85rem;">@Model.PhoneNumber</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Address</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.Address ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">City</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.City ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Country</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.Country ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Postal Code</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.PostalCode ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">National ID</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.NationalId ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Date of Birth</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.DateOfBirth?.ToString("dd MMM yyyy") ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Currency</span><p style="color:var(--cream);font-size:0.85rem;">@Model.PreferredCurrency</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Language</span><p style="color:var(--cream);font-size:0.85rem;">@Model.PreferredLanguage.ToUpper()</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Account Status</span>
+                <p style="color:var(--cream);font-size:0.85rem;">
+                    <span class="badge @(Model.IsActive ? "badge-approved" : "badge-rejected")">@(Model.IsActive ? "Active" : "Inactive")</span>
+                </p>
+            </div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Registered</span><p style="color:var(--cream);font-size:0.85rem;">@Model.CreatedAt.ToString("dd MMM yyyy")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Last Login</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.LastLoginAt?.ToString("dd MMM yyyy HH:mm") ?? "—")</p></div>
+            <div><span style="color:var(--text-muted);font-size:0.75rem;">Last Login IP</span><p style="color:var(--cream);font-size:0.85rem;">@(Model.LastLoginIp ?? "—")</p></div>
+            @if (!string.IsNullOrEmpty(Model.Notes))
+            {
+                <div style="grid-column:span 2;"><span style="color:var(--text-muted);font-size:0.75rem;">Admin Notes</span><p style="color:var(--cream);font-size:0.85rem;">@Model.Notes</p></div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="admin-page-title" style="font-size:1.2rem;margin-bottom:16px;">Orders (@orders.Count())</div>
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead><tr><th>Order #</th><th>Date</th><th>Total</th><th>Status</th></tr></thead>
+        <tbody>
+            @if (orders.Any())
+            {
+                @foreach (var order in orders)
+                {
+                    <tr>
+                        <td><a href="/admin/orders/@order.Id" style="color:var(--gold);font-weight:600;">@order.OrderNumber</a></td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">@order.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td style="color:var(--gold);">ج.م @order.TotalAmount.ToString("N0")</td>
+                        <td><span class="badge badge-pending">@order.StatusName</span></td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="4" style="text-align:center;padding:40px;color:var(--text-muted);">No orders yet</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

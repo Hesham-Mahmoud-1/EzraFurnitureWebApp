@@ -1,0 +1,60 @@
+@model IEnumerable<Ezura.Core.Entities.ApplicationUser>
+@{
+    ViewData["Title"] = "Customers";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    var totalCount = ViewBag.TotalCount;
+}
+
+<div class="admin-topbar">
+    <div class="admin-page-title">Customers</div>
+    <div style="font-size:0.85rem;color:var(--text-muted);">@totalCount total</div>
+</div>
+
+<div class="admin-table-wrapper">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Joined</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                @foreach (var customer in Model)
+                {
+                    <tr>
+                        <td>
+                            <div style="display:flex;align-items:center;gap:12px;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:var(--dark-3);display:flex;align-items:center;justify-content:center;border:1px solid var(--border);">
+                                    <span style="font-size:0.75rem;color:var(--gold);">@(customer.FirstName?.FirstOrDefault() ?? '?')</span>
+                                </div>
+                                <span style="color:var(--cream);font-weight:500;">@customer.FirstName @customer.LastName</span>
+                            </div>
+                        </td>
+                        <td>@customer.Email</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td style="color:var(--text-muted);font-size:0.78rem;">@customer.CreatedAt.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <a href="/admin/customers/details/@customer.Id" class="btn-secondary" style="padding:6px 14px;font-size:0.62rem;">View</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr><td colspan="5" style="text-align:center;padding:60px;color:var(--text-muted);">No customers found</td></tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="pagination">
+    @for (int i = 1; i <= Math.Ceiling((double)(totalCount ?? 0) / 20); i++)
+    {
+        <a href="?page=@i" class="page-link @(i == (ViewBag.Page ?? 1) ? "active" : "")">@i</a>
+    }
+</div>

@@ -1,0 +1,215 @@
+@model CartDto
+@{
+    ViewData["Title"] = "Cart";
+}
+
+@if (Model.Items.Any())
+{
+    <div class="cart-layout" style="padding-top:120px;">
+        <div>
+            <h2 style="margin-bottom:32px;">Shopping Cart <span style="font-size:1rem;color:var(--text-muted);font-family:'Montserrat',sans-serif;">(@Model.ItemCount items)</span></h2>
+
+            @foreach (var item in Model.Items)
+            {
+                <div class="cart-item" data-cart-item-id="@item.Id">
+                    <div class="cart-item-img" style="display:flex;align-items:center;justify-content:center;background:var(--dark-2);">
+                        @if (!string.IsNullOrEmpty(item.ProductThumbnail))
+                        {
+                            <img src="@item.ProductThumbnail" alt="@item.ProductName" style="width:100%;height:100%;object-fit:cover;" />
+                        }
+                        else
+                        {
+                            <span style="font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);opacity:0.3;">E</span>
+                        }
+                    </div>
+                    <div>
+                        <a href="/products/@item.ProductSlug" class="cart-item-name">@item.ProductName</a>
+                        <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;" data-price-egp="@item.UnitPrice">ج.م @item.UnitPrice.ToString("N0") each</div>
+                        <div style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;max-width:360px;">
+                            <div>
+                                <label style="font-size:0.65rem;color:var(--text-muted);display:block;margin-bottom:2px;">Height</label>
+                                <input class="form-control cart-field" data-cart-item-id="@item.Id" data-field="height" type="text" value="@item.Height" placeholder="e.g. 120cm" style="font-size:0.72rem;padding:4px 8px;width:100%;" />
+                            </div>
+                            <div>
+                                <label style="font-size:0.65rem;color:var(--text-muted);display:block;margin-bottom:2px;">Width</label>
+                                <input class="form-control cart-field" data-cart-item-id="@item.Id" data-field="width" type="text" value="@item.Width" placeholder="e.g. 80cm" style="font-size:0.72rem;padding:4px 8px;width:100%;" />
+                            </div>
+                            <div>
+                                <label style="font-size:0.65rem;color:var(--text-muted);display:block;margin-bottom:2px;">Color</label>
+                                <input class="form-control cart-field" data-cart-item-id="@item.Id" data-field="color" type="text" value="@item.Color" placeholder="e.g. Walnut" style="font-size:0.72rem;padding:4px 8px;width:100%;" />
+                            </div>
+                        </div>
+                        <div style="margin-top:6px;max-width:360px;">
+                            <label style="font-size:0.65rem;color:var(--text-muted);display:block;margin-bottom:2px;">Notes</label>
+                            <textarea class="form-control cart-field" data-cart-item-id="@item.Id" data-field="notes" rows="2" placeholder="Additional details..." style="font-size:0.72rem;resize:vertical;width:100%;">@item.CustomizationNotes</textarea>
+                        </div>
+                        <button class="btn-secondary save-fields-btn" data-cart-item-id="@item.Id" style="font-size:0.62rem;padding:4px 14px;margin-top:6px;display:none;">Save Customization</button>
+                    </div>
+                    <div class="cart-qty">
+                        <button class="qty-btn" data-update-cart="@item.Id" data-qty="@(item.Quantity - 1)">−</button>
+                        <input class="qty-input" value="@item.Quantity" readonly />
+                        <button class="qty-btn" data-update-cart="@item.Id" data-qty="@(item.Quantity + 1)">+</button>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);" data-price-egp="@item.TotalPrice">ج.م @item.TotalPrice.ToString("N0")</div>
+                        <button class="icon-btn" style="margin-top:8px;margin-left:auto;" data-remove-cart="@item.Id" title="Remove">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            }
+
+            <div style="margin-top:32px;display:flex;gap:16px;">
+                <a href="/products" class="btn-secondary">Continue Shopping</a>
+                <form method="post" action="/cart/clear">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-secondary" style="color:#CF6679;border-color:rgba(207,102,121,0.3);">Clear Cart</button>
+                </form>
+            </div>
+        </div>
+
+        <div>
+            <div class="order-summary">
+                <h4 style="margin-bottom:24px;">Order Summary</h4>
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span class="amount" data-price-egp="@Model.SubTotal">ج.م @Model.SubTotal.ToString("N0")</span>
+                </div>
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span style="color:var(--text-muted);">Calculated at checkout</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span class="amount" style="font-size:1.3rem;" data-price-egp="@Model.SubTotal">ج.م @Model.SubTotal.ToString("N0")</span>
+                </div>
+                <a href="/checkout" class="btn-primary" style="width:100%;justify-content:center;margin-top:24px;">
+                    Proceed to Checkout
+                </a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <section class="section" style="padding-top:160px;text-align:center;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:4rem;color:var(--gold);opacity:0.2;margin-bottom:24px;">🛒</div>
+        <h2 style="margin-bottom:16px;">Your Cart is Empty</h2>
+        <p style="margin-bottom:48px;">Looks like you haven't added anything yet. Browse our collection to find your perfect piece.</p>
+        <a href="/products" class="btn-primary">Explore Collection</a>
+    </section>
+}
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // ── Remove cart item ──────────────────────────────────────────
+    document.querySelectorAll('[data-remove-cart]').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const cartItemId = parseInt(this.dataset.removeCart);
+            const cartLayout = document.querySelector('.cart-layout');
+            if (!confirm('Remove this item from your cart?')) return;
+            fetch('/cart/remove?cartItemId=' + cartItemId, { method: 'POST' })
+                .then(r => r.json()).then(data => {
+                    if (data.success) {
+                        const item = this.closest('.cart-item');
+                        item.style.opacity = '0';
+                        item.style.transform = 'translateX(40px)';
+                        item.style.transition = 'all 0.3s ease';
+                        setTimeout(() => {
+                            item.remove();
+                            // Update cart count badge
+                            const badge = document.getElementById('cart-badge');
+                            if (badge) {
+                                badge.textContent = data.itemCount;
+                                badge.style.display = data.itemCount > 0 ? 'flex' : 'none';
+                            }
+                            // Update heading count and summary
+                            const heading = cartLayout?.querySelector('h2 span');
+                            if (heading) heading.textContent = '(' + data.itemCount + ' items)';
+                            const summaryAmounts = cartLayout?.querySelectorAll('.order-summary .amount');
+                            if (summaryAmounts && data.itemCount > 0) {
+                                summaryAmounts.forEach(el => {
+                                    el.dataset.priceEgp = data.subTotal;
+                                });
+                                // Re-apply selected currency to summary
+                                const curCode = document.documentElement.dataset.currency || 'EGP';
+                                if (curCode !== 'EGP') window.setCurrency(curCode);
+                            }
+                            // Show empty state if cart is now empty
+                            if (data.itemCount === 0 && cartLayout) {
+                                cartLayout.outerHTML = '\u003Csection class=\"section\" style=\"padding-top:160px;text-align:center;\"\u003E\u003Cdiv style=\"font-family:\'Cormorant Garamond\',serif;font-size:4rem;color:var(--gold);opacity:0.2;margin-bottom:24px;\"\u003E\uD83D\uDED2\u003C/div\u003E\u003Ch2 style=\"margin-bottom:16px;\"\u003EYour Cart is Empty\u003C/h2\u003E\u003Cp style=\"margin-bottom:48px;\"\u003ELooks like you haven\'t added anything yet. Browse our collection to find your perfect piece.\u003C/p\u003E\u003Ca href=\"/products\" class=\"btn-primary\"\u003EExplore Collection\u003C/a\u003E\u003C/section\u003E';
+                            }
+                        }, 300);
+                    }
+                });
+        });
+    });
+
+    // ── Save customization fields ─────────────────────────────────
+    function getOrigFields(id) {
+        const fields = {};
+        document.querySelectorAll(`.cart-field[data-cart-item-id="${id}"]`).forEach(el => {
+            fields[el.dataset.field] = el.defaultValue;
+        });
+        return fields;
+    }
+
+    function getCurFields(id) {
+        const fields = {};
+        document.querySelectorAll(`.cart-field[data-cart-item-id="${id}"]`).forEach(el => {
+            fields[el.dataset.field] = el.value;
+        });
+        return fields;
+    }
+
+    function fieldsChanged(id) {
+        const orig = getOrigFields(id);
+        const cur = getCurFields(id);
+        return Object.keys(orig).some(k => orig[k] !== cur[k]);
+    }
+
+    function saveFields(id) {
+        const fields = getCurFields(id);
+        fetch('/cart/updatenotes', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                cartItemId: parseInt(id),
+                notes: fields.notes || null,
+                height: fields.height || null,
+                width: fields.width || null,
+                color: fields.color || null
+            })
+        }).then(r => r.json()).then(data => {
+            if (data.success) {
+                document.querySelectorAll(`.cart-field[data-cart-item-id="${id}"]`).forEach(el => {
+                    el.defaultValue = el.value;
+                });
+                const btn = document.querySelector(`.save-fields-btn[data-cart-item-id="${id}"]`);
+                if (btn) btn.style.display = 'none';
+            }
+        });
+    }
+
+    document.querySelectorAll('.cart-field').forEach(field => {
+        const id = field.dataset.cartItemId;
+        const btn = document.querySelector(`.save-fields-btn[data-cart-item-id="${id}"]`);
+
+        field.addEventListener('input', function () {
+            if (btn) btn.style.display = fieldsChanged(id) ? 'inline-block' : 'none';
+        });
+
+        field.addEventListener('blur', function () {
+            if (fieldsChanged(id)) saveFields(id);
+        });
+    });
+
+    document.querySelectorAll('.save-fields-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            saveFields(this.dataset.cartItemId);
+        });
+    });
+});
+</script>
+}

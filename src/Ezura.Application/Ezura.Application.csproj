@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Ezura.Application</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <!--
+      AutoMapper 13.0.1 is the latest version compatible with .NET 8.
+      The CVE fix (GHSA-rvv3-g6hj-g44x) was patched in v15.1.1+/v16.1.1+, which require .NET 9+.
+      Since no patched version exists for .NET 8, the advisory is suppressed below and
+      mitigated in code by setting MaxDepth = 64 on all AutoMapper profiles.
+      AutoMapper.Extensions.Microsoft.DependencyInjection is removed — DI support
+      (AddAutoMapper) was merged directly into the core package starting from v13.
+    -->
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
+    <PackageReference Include="ClosedXML" Version="0.102.3" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="8.0.1" />
+    <PackageReference Include="QuestPDF" Version="2026.5.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ezura.Core\Ezura.Core.csproj" />
+    <ProjectReference Include="..\Ezura.Infrastructure\Ezura.Infrastructure.csproj" />
+  </ItemGroup>
+  <!-- Suppress AutoMapper CVE audit warning: no patched version exists for .NET 8.
+       Mitigated in code via MaxDepth = 64 on all mapping profiles. -->
+  <ItemGroup>
+    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-rvv3-g6hj-g44x" />
+  </ItemGroup>
+</Project>
